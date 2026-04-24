@@ -18,16 +18,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-
-data class LostItem(
-    val title: String,
-    val description: String,
-    val location: String,
-    val status: String
-)
+import com.fiky.lofo_app.data.models.ItemModel
 
 @Composable
-fun ItemCard(navController: NavController, item: LostItem) {
+fun ItemCard(navController: NavController, item: ItemModel) {
     Card(
         onClick = {
 //            navController.navigate("detail/${item.title}")
@@ -52,20 +46,13 @@ fun ItemCard(navController: NavController, item: LostItem) {
                 modifier = Modifier.padding(start = 16.dp)
             ) {
                 Text(
-                    text = item.title,
+                    text = item.itemName,
                     style = MaterialTheme.typography.titleLarge
                 )
 
                 Text(
-                    text = item.description,
+                    text = item.itemInfo,
                     style = MaterialTheme.typography.bodySmall
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = item.location,
-                    style = MaterialTheme.typography.labelSmall
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))

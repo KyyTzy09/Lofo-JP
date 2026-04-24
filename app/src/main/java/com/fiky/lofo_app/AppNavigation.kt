@@ -13,7 +13,10 @@ import com.fiky.lofo_app.screens.auth.register.RegisterScreen
 import com.fiky.lofo_app.screens.auth.register.RegisterViewModel
 import com.fiky.lofo_app.screens.home.HomeScreen
 import com.fiky.lofo_app.screens.home.HomeViewModel
+import com.fiky.lofo_app.screens.item.CreateItemScreen
 import com.fiky.lofo_app.screens.onboarding.OnboardingScreen
+import com.fiky.lofo_app.screens.scan.ScanController
+import com.fiky.lofo_app.screens.scan.ScanScreen
 
 @Composable()
 fun AppNavigation (
@@ -31,6 +34,17 @@ fun AppNavigation (
             )
         }
 
+        composable("scan") {
+            val viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+            ScanScreen(
+                onNavigateToDetail = {
+                    navController.navigate("item/detail/$it")
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+
         navigation(startDestination = "home", route = "main") {
             composable("home") {
                 val viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
@@ -40,6 +54,18 @@ fun AppNavigation (
                         viewModel
                     )
                 }
+            }
+        }
+
+        navigation(startDestination = "item/create", route="item") {
+            composable("item/detail/{itemId}") {
+                val itemId = it.arguments?.getString("itemId")
+                Text("Detail")
+            }
+            composable("item/create") {
+                CreateItemScreen(
+                    onBack = { navController.popBackStack() }
+                )
             }
         }
 
