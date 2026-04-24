@@ -6,6 +6,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.fiky.lofo_app.screens.auth.register.RegisterScreen
+import com.fiky.lofo_app.screens.auth.register.RegisterViewModel
 import com.fiky.lofo_app.screens.onboarding.OnboardingScreen
 
 @Composable()
@@ -19,10 +21,21 @@ fun AppNavigation (
         startDestination = "onboarding"
     ) {
         composable("onboarding") {
-            OnboardingScreen()
+            OnboardingScreen(
+                navController
+            )
         }
         composable("home") {
             Text("Home Screen")
+        }
+
+        composable("register") {
+            val viewModel: RegisterViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+            RegisterScreen(
+                modifier = modifier,
+                navController,
+                viewModel
+            )
         }
     }
 }
