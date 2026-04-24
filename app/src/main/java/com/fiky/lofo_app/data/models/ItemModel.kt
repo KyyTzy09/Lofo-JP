@@ -7,5 +7,6 @@ data class ItemModel(
     val itemName : String,
     val itemInfo : String,
     val status: String,
-    val qrUrl : String
+    val qrUrl : String,
+    val user : UserModel
 )
