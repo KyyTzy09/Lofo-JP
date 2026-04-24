@@ -159,7 +159,7 @@ fun OnboardingScreen(
                             if (pagerState.currentPage < 3) {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
                             } else {
-                                navController.navigate("register")
+                                navController.navigate("login")
                             }
                         }
                     },
