@@ -1,13 +1,15 @@
 package com.fiky.lofo_app.screens.auth.login
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 class LoginViewModel: ViewModel() {
-    var state = LoginState()
+    var state by mutableStateOf(LoginState())
         private set
 
     fun onPhoneChange(value: String) {

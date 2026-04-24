@@ -78,7 +78,7 @@ fun LoginScreen(
         Button (
             onClick = {
                 viewModel.login {
-                    navController.navigate("home") {
+                    navController.navigate("main") {
                         popUpTo("login") { inclusive = true }
                     }
                 }
@@ -89,7 +89,7 @@ fun LoginScreen(
                 .height(56.dp),
             shape = RoundedCornerShape(16.dp)
         ) {
-            Text(if (state.isLoading) "Loading..." else "Sign In",
+            Text(if (state.isLoading) "Loading..." else "Sign Iffn",
                 style = MaterialTheme.typography.labelLarge
             )
         }
