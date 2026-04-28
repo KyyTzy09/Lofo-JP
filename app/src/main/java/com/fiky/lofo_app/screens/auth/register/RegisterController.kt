@@ -7,8 +7,11 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.fiky.lofo_app.data.api.repositories.AuthRepository
 
 class RegisterViewModel: ViewModel() {
+    private var authRepo: AuthRepository = AuthRepository();
+
     var state by mutableStateOf(RegisterState())
         private set
 
@@ -41,9 +44,6 @@ class RegisterViewModel: ViewModel() {
             state = state.copy(isLoading = true, error = null)
 
             try {
-                // simulasi API call
-                delay(1500)
-
                 if (state.username.isBlank() || state.password.isBlank() || state.phone.isBlank()) {
                     throw Exception("Field wajib diisi")
                 }
@@ -52,6 +52,7 @@ class RegisterViewModel: ViewModel() {
                     throw Exception("Anda harus menyetujui syarat dan ketentuan")
                 }
 
+                authRepo.register(state.username, state.phone, state.password, state.address)
                 onSuccess()
             } catch (e: Exception) {
                 state = state.copy(error = e.message)

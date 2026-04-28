@@ -7,9 +7,9 @@ import com.fiky.lofo_app.data.api.dto.auth.RegisterResponse
 import com.fiky.lofo_app.data.api.retrofit.ApiService
 
 class AuthRepository {
-    suspend fun register(username: String, email: String, password: String, address: String): RegisterResponse {
+    suspend fun register(username: String, phoneNumber: String, password: String, address: String): RegisterResponse {
            return ApiService.authService.register(
-               RegisterRequest(username, email, password, address)
+               RegisterRequest(username, phoneNumber, password, address)
            )
     }
 

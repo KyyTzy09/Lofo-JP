@@ -7,8 +7,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.fiky.lofo_app.data.api.repositories.AuthRepository
 
 class LoginViewModel: ViewModel() {
+    private var authRepo: AuthRepository = AuthRepository();
+
     var state by mutableStateOf(LoginState())
         private set
 
@@ -25,13 +28,11 @@ class LoginViewModel: ViewModel() {
             state = state.copy(isLoading = true, error = null)
 
             try {
-                // simulasi API call (nanti ganti Retrofit)
-                delay(1500)
-
                 if (state.phone.isBlank() || state.password.isBlank()) {
                     throw Exception("Field tidak boleh kosong")
                 }
 
+                val result = authRepo.login(state.phone, state.password)
                 // sukses
                 onSuccess()
             } catch (e: Exception) {
