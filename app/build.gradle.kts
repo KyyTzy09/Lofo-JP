@@ -43,7 +43,20 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("androidx.compose.foundation:foundation:1.6.0")
     implementation("androidx.navigation:navigation-compose:2.7.7")
-    
+
+    // Retrofit (buat HTTP request)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    // Converter JSON → Kotlin object
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    // OkHttp (network client)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    // Logging (biar gak debugging pakai firasat)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    // Coroutines (biar async gak kayak callback neraka)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    // Lifecycle ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+
     // CameraX
     val cameraxVersion = "1.3.1"
     implementation("androidx.camera:camera-core:$cameraxVersion")

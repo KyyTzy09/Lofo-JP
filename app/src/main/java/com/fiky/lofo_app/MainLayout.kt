@@ -24,6 +24,7 @@ fun MainLayout(
     )
 
     Scaffold(
+
         bottomBar = {
             if (showBottomBar) {
                 BottomNavBar(navController)

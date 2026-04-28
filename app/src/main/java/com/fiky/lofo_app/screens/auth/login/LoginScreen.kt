@@ -52,9 +52,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    navController: NavController,
-    viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-    snackbarHostState: SnackbarHostState
+    viewModel: LoginViewModel,
+    snackbarHostState: SnackbarHostState,
+    onLoginSuccess: () -> Unit,
+    onNavigateToRegister: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val state = viewModel.state
@@ -145,7 +146,7 @@ fun LoginScreen(
                     scope.launch {
                         ToastHelper.show(snackbarHostState, "Sukses", "Login Berhasil!", ToastType.SUCCESS)
                     }
-                    navController.navigate("main")
+                    onLoginSuccess()
                 }},
                 modifier = Modifier
                     .fillMaxWidth()
@@ -193,7 +194,9 @@ fun LoginScreen(
                         color = MaterialTheme.colorScheme.primary,
                         textDecoration = TextDecoration.Underline
                     ),
-                    modifier = Modifier.clickable { navController.navigate("register") }
+                    modifier = Modifier.clickable {
+                        onNavigateToRegister()
+                    }
                 )
             }
         }

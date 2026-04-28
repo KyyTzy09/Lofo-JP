@@ -212,7 +212,7 @@ fun CreateItemScreen(
                                     Icons.Default.AddAPhoto,
                                     contentDescription = null,
                                     modifier = Modifier.size(36.dp),
-                                    tint = MaterialTheme.colorScheme.primary
+                                    tint = Color.White
                                 )
                             }
                             Spacer(modifier = Modifier.height(16.dp))

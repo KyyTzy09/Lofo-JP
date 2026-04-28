@@ -33,10 +33,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(
-    navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: RegisterViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-    snackbarHostState: SnackbarHostState
+    viewModel: RegisterViewModel,
+    snackbarHostState: SnackbarHostState,
+    onRegisterSuccess: () -> Unit,
+    onNavigateToLogin:() -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val state = viewModel.state
@@ -165,9 +166,9 @@ fun RegisterScreen(
             Button(
                 onClick = { viewModel.register {
                     scope.launch {
-                        ToastHelper.show(snackbarHostState, "Sukses", "Login Berhasil!", ToastType.SUCCESS)
+                        ToastHelper.show(snackbarHostState, "Sukses", "Akun Berhasil Dibuat!", ToastType.SUCCESS)
                     }
-                    navController.navigate("login")
+                    onRegisterSuccess()
                 } },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -215,7 +216,7 @@ fun RegisterScreen(
                         color = MaterialTheme.colorScheme.primary,
                         textDecoration = TextDecoration.Underline
                     ),
-                    modifier = Modifier.clickable { navController.navigate("login") }
+                    modifier = Modifier.clickable { onNavigateToLogin() }
                 )
             }
         }

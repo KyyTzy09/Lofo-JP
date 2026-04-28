@@ -78,14 +78,21 @@ fun AppNavigation (
             composable("login") {
                 val viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
                 LoginScreen(
-                navController = navController,viewModel = viewModel, snackbarHostState = snackbarHostState
-            ) }
+                    viewModel = viewModel,
+                    snackbarHostState = snackbarHostState,
+                    onLoginSuccess = {
+                        navController.navigate("main/home") {
+                        popUpTo("login") { inclusive = true }
+                        }},
+                    onNavigateToRegister = { navController.navigate("register") }
+                ) }
             composable("register") {
                 val viewModel: RegisterViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
                 RegisterScreen(
-                navController = navController,
-                viewModel = viewModel,
-                    snackbarHostState = snackbarHostState
+                    viewModel = viewModel,
+                    snackbarHostState = snackbarHostState,
+                    onRegisterSuccess = { navController.navigate("login") },
+                    onNavigateToLogin = { navController.navigate("login") }
             ) }
         }
     }
