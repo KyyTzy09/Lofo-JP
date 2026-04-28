@@ -12,6 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -25,13 +27,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.fiky.lofo_app.composables.CustomTextField
 import com.fiky.lofo_app.composables.FieldLabel
+import com.fiky.lofo_app.composables.ToastType
+import com.fiky.lofo_app.utils.ToastHelper
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: RegisterViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: RegisterViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    snackbarHostState: SnackbarHostState
 ) {
+    val scope = rememberCoroutineScope()
     val state = viewModel.state
     val scrollState = rememberScrollState()
 
@@ -156,7 +163,12 @@ fun RegisterScreen(
             )
 
             Button(
-                onClick = { viewModel.register { navController.navigate("login") } },
+                onClick = { viewModel.register {
+                    scope.launch {
+                        ToastHelper.show(snackbarHostState, "Sukses", "Login Berhasil!", ToastType.SUCCESS)
+                    }
+                    navController.navigate("login")
+                } },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)

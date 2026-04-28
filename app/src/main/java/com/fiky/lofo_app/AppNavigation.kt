@@ -1,5 +1,6 @@
 package com.fiky.lofo_app
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,7 +21,8 @@ import com.fiky.lofo_app.screens.scan.ScanScreen
 
 @Composable()
 fun AppNavigation (
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState
 ) {
     val navController = rememberNavController()
 
@@ -66,7 +68,8 @@ fun AppNavigation (
             }
             composable("item/create") {
                 CreateItemScreen(
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    snackbarHostState = snackbarHostState
                 )
             }
         }
@@ -75,13 +78,14 @@ fun AppNavigation (
             composable("login") {
                 val viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
                 LoginScreen(
-                navController = navController,viewModel = viewModel
+                navController = navController,viewModel = viewModel, snackbarHostState = snackbarHostState
             ) }
             composable("register") {
                 val viewModel: RegisterViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
                 RegisterScreen(
                 navController = navController,
-                viewModel = viewModel
+                viewModel = viewModel,
+                    snackbarHostState = snackbarHostState
             ) }
         }
     }

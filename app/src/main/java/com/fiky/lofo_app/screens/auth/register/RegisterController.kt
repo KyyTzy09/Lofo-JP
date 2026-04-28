@@ -12,10 +12,6 @@ class RegisterViewModel: ViewModel() {
     var state by mutableStateOf(RegisterState())
         private set
 
-    fun onFullNameChange(value: String) {
-        state = state.copy(fullName = value)
-    }
-
     fun onUsernameChange(value: String) {
         state = state.copy(username = value)
     }
@@ -36,10 +32,6 @@ class RegisterViewModel: ViewModel() {
         state = state.copy(password = value)
     }
 
-    fun onConfirmPasswordChange(value: String) {
-        state = state.copy(confirmPassword = value)
-    }
-
     fun onToggleTerms(value: Boolean) {
         state = state.copy(agreeTerms = value)
     }
@@ -54,10 +46,6 @@ class RegisterViewModel: ViewModel() {
 
                 if (state.username.isBlank() || state.password.isBlank() || state.phone.isBlank()) {
                     throw Exception("Field wajib diisi")
-                }
-
-                if (state.password != state.confirmPassword) {
-                    throw Exception("Password tidak cocok")
                 }
 
                 if (!state.agreeTerms) {

@@ -27,9 +27,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -43,13 +45,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fiky.lofo_app.composables.CustomTextField
 import com.fiky.lofo_app.composables.FieldLabel
+import com.fiky.lofo_app.composables.ToastType
+import com.fiky.lofo_app.utils.ToastHelper
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    snackbarHostState: SnackbarHostState
 ) {
+    val scope = rememberCoroutineScope()
     val state = viewModel.state
     Box(
         modifier = modifier
@@ -134,7 +141,12 @@ fun LoginScreen(
             )
 
             Button(
-                onClick = { viewModel.login { navController.navigate("main") } },
+                onClick = { viewModel.login {
+                    scope.launch {
+                        ToastHelper.show(snackbarHostState, "Sukses", "Login Berhasil!", ToastType.SUCCESS)
+                    }
+                    navController.navigate("main")
+                }},
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
