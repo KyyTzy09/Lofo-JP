@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 
 @Composable
 fun OnboardingPage(page: Int) {
@@ -54,25 +55,18 @@ fun StepOne() {
                 .fillMaxWidth()
                 .height(200.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color.LightGray)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(Color.Transparent, Color(0xFF14002F).copy(alpha = 0.6f))
-                        )
+                .background(
+                    Brush.verticalGradient(
+                        listOf(Color.Transparent, Color(0xFF14002F).copy(alpha = 0.6f))
                     )
-                    .padding(16.dp),
-                contentAlignment = Alignment.BottomStart
-            ) {
-                Text(
-                    "STEP 01",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.White
                 )
-            }
+        ) {
+            AsyncImage(
+                model = "https://cdn-icons-png.freepik.com/512/10608/10608883.png",
+                contentDescription = "Image1",
+                modifier = Modifier
+                    .fillMaxSize(),
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))

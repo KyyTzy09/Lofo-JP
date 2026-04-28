@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.fiky.lofo_app.ui.theme.Primary
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -54,11 +55,11 @@ fun OnboardingScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "RecoverEase",
+                    "LoFo",
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Black,
                         fontStyle = FontStyle.Italic,
-                        color = Color(0xFF4C1D95)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 )
 
@@ -93,14 +94,14 @@ fun OnboardingScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    "Protect what matters.",
+                    "Selamat Datang",
                     style = MaterialTheme.typography.displayLarge,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    "Welcome to the premium recovery ecosystem. Follow these simple steps to secure your valuables.",
+                    "Selamat datang di LoFo, Mengelola barang pribadi menjadi lebih mudah.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -159,7 +160,7 @@ fun OnboardingScreen(
                             if (pagerState.currentPage < 3) {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
                             } else {
-                                navController.navigate("main")
+                                navController.navigate("register")
                             }
                         }
                     },
@@ -172,19 +173,11 @@ fun OnboardingScreen(
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Text(
-                        if (pagerState.currentPage == 3) "Get Started" else "Next",
+                        if (pagerState.currentPage == 3) "Mulai Sekarang" else "Next",
                         style = MaterialTheme.typography.labelLarge,
                         color = Color.White
                     )
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    "JOIN 50,000+ PROTECTED MEMBERS",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer
-                )
             }
         }
     }

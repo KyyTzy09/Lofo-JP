@@ -9,10 +9,13 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
+import com.fiky.lofo_app.ui.theme.Primary
 
 data class NavItem(
     val route: String,
@@ -34,6 +37,7 @@ fun BottomNavBar(navController: NavHostController) {
 
         items.forEach { item ->
             NavigationBarItem(
+
                 selected = currentRoute == item.route,
                 onClick = {
                     navController.navigate(item.route) {
@@ -42,7 +46,18 @@ fun BottomNavBar(navController: NavHostController) {
                     }
                 },
                 icon = { Icon(item.icon, contentDescription = item.label) },
-                label = { Text(item.label) }
+                label = {
+                    if (currentRoute != item.route) {
+                        Text(item.label);
+                    }
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = Primary, // background item yang selected
+                    selectedIconColor = Color.White,
+                    selectedTextColor = Color.White,
+                    unselectedIconColor = Primary,
+                    unselectedTextColor = Color.Gray
+                )
             )
         }
     }

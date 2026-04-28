@@ -36,12 +36,14 @@ fun AppNavigation (
 
         composable("scan") {
             val viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
-            ScanScreen(
+            MainLayout(navController) {
+                ScanScreen(
                 onNavigateToDetail = {
                     navController.navigate("item/detail/$it")
                 },
                 onBack = { navController.popBackStack() }
-            )
+                )
+            }
         }
 
 

@@ -16,8 +16,8 @@ class HomeViewModel : ViewModel() {
                 itemName = "Leather Wallet",
                 itemInfo = "Found 2h ago",
                 status = "TERSEDIA",
-                qrUrl = ""
-
+                qrUrl = null,
+                user = null
             ),
             ItemModel(
                 itemId = "2",
@@ -26,7 +26,8 @@ class HomeViewModel : ViewModel() {
                 itemName = "Leather Wallet",
                 itemInfo = "Found 2h ago",
                 status = "TERSEDIA",
-                qrUrl = ""
+                qrUrl = "http",
+                user = null
             ),
             ItemModel(
                 itemId = "3",
@@ -35,7 +36,8 @@ class HomeViewModel : ViewModel() {
                 itemName = "Mouse",
                 itemInfo = "YAyaya",
                 status = "HILANG",
-                qrUrl = ""
+                qrUrl = null,
+                user = null
             )
         )
     )
