@@ -40,6 +40,8 @@ android {
 }
 
 dependencies {
+//    Map
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
 //    DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 

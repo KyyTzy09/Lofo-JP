@@ -1,6 +1,7 @@
 package com.fiky.lofo_app
 
 import android.os.Bundle
+import android.preference.PreferenceManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -21,10 +22,15 @@ import com.fiky.lofo_app.composables.ToastType
 import com.fiky.lofo_app.screens.auth.AuthViewModel
 import com.fiky.lofo_app.screens.onboarding.OnboardingScreen
 import com.fiky.lofo_app.ui.theme.LoFo_AppTheme
+import org.osmdroid.config.Configuration
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Konfigurasi OSMDroid
+        Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
+        // Ganti dengan package name kamu agar tidak diblokir server peta
+        Configuration.getInstance().userAgentValue = "com.fiky.lofo_app"
         enableEdgeToEdge()
         setContent {
             val snackbarHostState = remember { SnackbarHostState() }

@@ -101,7 +101,7 @@ fun ScanScreen(
                         "Scan QR Barang",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
+                            color = Color.White
                         )
                     )
                 },
@@ -111,18 +111,18 @@ fun ScanScreen(
                         modifier = Modifier
                             .padding(start = 8.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                            .background(Color.Transparent)
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = Color.White
                         )
                     }
                 },
                 actions = {},
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
+                    containerColor = MaterialTheme.colorScheme.primary
                 )
             )
         },
@@ -208,21 +208,6 @@ fun ScanScreen(
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
-
-                Spacer(modifier = Modifier.height(48.dp))
-
-                // Control Buttons
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    ScanActionButton(
-                        icon = Icons.Default.FlashlightOn,
-                        label = "Flashlight",
-                        onClick = { controller.toggleFlashlight() },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
             }
         }
     }

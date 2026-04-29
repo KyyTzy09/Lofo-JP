@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.fiky.lofo_app.composables.OpenStreetMap
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -283,6 +284,7 @@ fun ItemDetailScreen(
                         }
 
                         // Last Seen Map Card
+                        // ... di dalam Column detail ...
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(32.dp),
@@ -291,62 +293,49 @@ fun ItemDetailScreen(
                             shadowElevation = 2.dp
                         ) {
                             Column {
-                                Row(
+                                // Judul Tetap Aman di Atas
+                                Text(
+                                    text = "Terakhir Dilihat",
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(24.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = "Terakhir Dilihat",
-                                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(200.dp)
-                                        .background(MaterialTheme.colorScheme.surfaceContainerHighest),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    AsyncImage(
-                                        model = "https://lh3.googleusercontent.com/aida-public/AB6AXuBt0980UBCqnA9C0D7UmxvX9evius4rbAIxFVSsTyKnC4jb42x8kudqSy3adV7dGaKqbHt_O6Q50IQ8DPvO8MMpRmqkI8YCyGsx4Q0cpu_TFJhMjmDV0p0BlRbx7xoXmwqxbvhATPTTqUpZS5dw05yWVgHFu2VrMo7jub-m5tLINzKRHpWo1JzC1YENOsYRjOdoG4jXvcDoYaZ-4nIQNTK57pKj5teW7itKwuyZNDhtn0pR_XL5Nua9hHxoUb1fJQx0jJCH1UNpFFDK",
-                                        contentDescription = "Map",
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentScale = ContentScale.Crop,
-                                        alpha = 0.6f
-                                    )
-                                    Surface(
-                                        shape = CircleShape,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(40.dp),
-                                        shadowElevation = 8.dp
+                                        .padding(horizontal = 24.dp)
+                                        .padding(top = 24.dp, bottom = 16.dp), // Beri jarak bawah agar tidak nempel map
+                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+
+                                val latitude = -7.435273
+                                val longitude = 109.248963
+
+                                if (latitude != null && longitude != null) {
+                                    // Bungkus Map dengan Box yang di-Clip
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(200.dp) // Kunci tinggi map di sini
+                                            .padding(horizontal = 16.dp) // Beri sedikit margin agar tidak mentok kiri-kanan (opsional)
+                                            .padding(bottom = 16.dp)
+                                            .clip(RoundedCornerShape(20.dp)) // Bikin sudut map melengkung biar estetik
+                                            .background(MaterialTheme.colorScheme.surfaceVariant)
                                     ) {
-                                        Box(contentAlignment = Alignment.Center) {
-                                            Icon(
-                                                Icons.Default.LocationOn,
-                                                contentDescription = null,
-                                                tint = Color.White,
-                                                modifier = Modifier.size(24.dp)
-                                            )
-                                        }
+                                        OpenStreetMap(
+                                            lat = latitude,
+                                            lon = longitude,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
                                     }
-                                }
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                                        .clickable { /* Expand */ }
-                                        .padding(16.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "Selengkapnya",
-                                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
+                                } else {
+                                    // Placeholder
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(200.dp)
+                                            .padding(horizontal = 24.dp, vertical = 16.dp)
+                                            .clip(RoundedCornerShape(20.dp))
+                                            .background(Color.LightGray.copy(alpha = 0.3f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text("Lokasi tidak tersedia", color = Color.Gray)
+                                    }
                                 }
                             }
                         }
