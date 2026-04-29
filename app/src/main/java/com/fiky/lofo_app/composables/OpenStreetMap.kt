@@ -7,6 +7,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 @Composable
 fun OpenStreetMap(
@@ -27,21 +29,31 @@ fun OpenStreetMap(
                 val marker = Marker(this)
                 marker.position = startPoint
                 marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                marker.title = "Lokasi Terakhir"
+                marker.title = "Lokasi Terakhir Barang"
                 overlays.add(marker)
 
+                //Self Location
+                val locationProvider = GpsMyLocationProvider(context)
+                val myLocationOverlay = MyLocationNewOverlay(locationProvider, this)
+
+                // Enables Self Location
+                myLocationOverlay.enableMyLocation()
+                // Opsional: Jika ingin otomatis zoom ke arah kita, aktifkan ini:
+                 myLocationOverlay.enableFollowLocation()
+                myLocationOverlay.setDrawAccuracyEnabled(true)
+
+                overlays.add(myLocationOverlay)
+
+                // Logic handle scroll agar tidak bentrok dengan parent
                 setOnTouchListener { v, event ->
                     when (event.action) {
                         MotionEvent.ACTION_DOWN -> {
-                            // Minta parent untuk tidak melakukan intercept touch
                             v.parent.requestDisallowInterceptTouchEvent(true)
                         }
                         MotionEvent.ACTION_UP -> {
-                            // Kembalikan kontrol ke parent
                             v.parent.requestDisallowInterceptTouchEvent(false)
                         }
                     }
-                    // Tetap jalankan fungsi touch bawaan MapView
                     false
                 }
             }
@@ -49,6 +61,8 @@ fun OpenStreetMap(
         update = { mapView ->
             val point = GeoPoint(lat, lon)
             mapView.controller.setCenter(point)
+
+            mapView.onResume()
         }
     )
 }

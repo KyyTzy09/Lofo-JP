@@ -311,7 +311,7 @@ fun ItemDetailScreen(
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(200.dp) // Kunci tinggi map di sini
+                                            .height(250.dp) // Kunci tinggi map di sini
                                             .padding(horizontal = 16.dp) // Beri sedikit margin agar tidak mentok kiri-kanan (opsional)
                                             .padding(bottom = 16.dp)
                                             .clip(RoundedCornerShape(20.dp)) // Bikin sudut map melengkung biar estetik
