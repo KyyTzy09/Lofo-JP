@@ -17,6 +17,7 @@ import com.fiky.lofo_app.screens.auth.register.RegisterViewModel
 import com.fiky.lofo_app.screens.home.HomeScreen
 import com.fiky.lofo_app.screens.home.HomeViewModel
 import com.fiky.lofo_app.screens.item.CreateItemScreen
+import com.fiky.lofo_app.screens.item.detail.ItemDetailScreen
 import com.fiky.lofo_app.screens.onboarding.OnboardingScreen
 import com.fiky.lofo_app.screens.scan.ScanScreen
 
@@ -92,8 +93,12 @@ fun AppNavigation(
 
         composable("item_detail/{itemId}") { backStackEntry ->
             val itemId = backStackEntry.arguments?.getString("itemId")
+                ?: return@composable
             // Detail Screen Kamu
-            Text("Detail Item ID: $itemId")
+            ItemDetailScreen(
+                itemId = itemId,
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }
