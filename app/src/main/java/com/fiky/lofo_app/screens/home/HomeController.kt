@@ -2,6 +2,7 @@ package com.fiky.lofo_app.screens.home
 
 import androidx.lifecycle.ViewModel
 import com.fiky.lofo_app.data.models.ItemModel
+import com.fiky.lofo_app.data.models.ItemStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -15,9 +16,9 @@ class HomeViewModel : ViewModel() {
                 image = "https://res.cloudinary.com/finderapp/image/upload/v1764752239/item/Item-1764752236903.jpg",
                 itemName = "Leather Wallet",
                 itemInfo = "Found 2h ago",
-                status = "TERSEDIA",
+                status = ItemStatus.TERSEDIA,
                 qrUrl = null,
-                user = null
+                user = null,
             ),
             ItemModel(
                 itemId = "2",
@@ -25,7 +26,7 @@ class HomeViewModel : ViewModel() {
                 image = "https://res.cloudinary.com/finderapp/image/upload/v1764752239/item/Item-1764752236903.jpg",
                 itemName = "Leather Wallet",
                 itemInfo = "Found 2h ago",
-                status = "TERSEDIA",
+                status = ItemStatus.TERSEDIA,
                 qrUrl = "http",
                 user = null
             ),
@@ -35,7 +36,7 @@ class HomeViewModel : ViewModel() {
                 image = "https://res.cloudinary.com/finderapp/image/upload/v1764752239/item/Item-1764752236903.jpg",
                 itemName = "Mouse",
                 itemInfo = "YAyaya",
-                status = "HILANG",
+                status = ItemStatus.TERSEDIA,
                 qrUrl = null,
                 user = null
             )

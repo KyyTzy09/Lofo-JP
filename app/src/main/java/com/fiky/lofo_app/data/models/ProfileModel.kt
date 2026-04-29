@@ -1,11 +1,10 @@
 package com.fiky.lofo_app.data.models
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.google.gson.annotations.SerializedName
 
-@Serializable
+
 data class ProfileModel(
-    @SerialName("user_id")
+    @SerializedName("user_id")
     val userId  : String,
     val username: String,
     val info    : String?,

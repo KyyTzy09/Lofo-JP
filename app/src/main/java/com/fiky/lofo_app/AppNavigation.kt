@@ -4,10 +4,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.fiky.lofo_app.layouts.MainLayout
 import com.fiky.lofo_app.screens.auth.login.LoginScreen
 import com.fiky.lofo_app.screens.auth.login.LoginViewModel
 import com.fiky.lofo_app.screens.auth.register.RegisterScreen
@@ -16,84 +18,82 @@ import com.fiky.lofo_app.screens.home.HomeScreen
 import com.fiky.lofo_app.screens.home.HomeViewModel
 import com.fiky.lofo_app.screens.item.CreateItemScreen
 import com.fiky.lofo_app.screens.onboarding.OnboardingScreen
-import com.fiky.lofo_app.screens.scan.ScanController
 import com.fiky.lofo_app.screens.scan.ScanScreen
 
-@Composable()
-fun AppNavigation (
+@Composable
+fun AppNavigation(
     modifier: Modifier = Modifier,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    authenticated: Boolean
 ) {
     val navController = rememberNavController()
+    val startDest = if (authenticated) "home" else "onboarding"
 
     NavHost(
         navController = navController,
-        startDestination = "onboarding"
+        startDestination = startDest,
+        modifier = modifier
     ) {
+        // --- ONBOARDING & AUTH ---
         composable("onboarding") {
-            OnboardingScreen(
-                navController
+            OnboardingScreen(navController)
+        }
+
+        composable("login") {
+            val viewModel: LoginViewModel = viewModel()
+            LoginScreen(
+                viewModel = viewModel,
+                snackbarHostState = snackbarHostState,
+                onLoginSuccess = {
+                    navController.navigate("home") {
+                        popUpTo("onboarding") { inclusive = true }
+                    }
+                },
+                onNavigateToRegister = { navController.navigate("register") }
             )
         }
 
+        composable("register") {
+            val viewModel: RegisterViewModel = viewModel()
+            RegisterScreen(
+                viewModel = viewModel,
+                snackbarHostState = snackbarHostState,
+                onRegisterSuccess = { navController.popBackStack() },
+                onNavigateToLogin = { navController.navigate("login") }
+            )
+        }
+
+        // --- MAIN APP CONTENT ---
+        composable("home") {
+            val viewModel: HomeViewModel = viewModel()
+            MainLayout(navController) {
+                HomeScreen(navController, viewModel)
+            }
+        }
+
         composable("scan") {
-            val viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
             MainLayout(navController) {
                 ScanScreen(
-                onNavigateToDetail = {
-                    navController.navigate("item/detail/$it")
-                },
-                onBack = { navController.popBackStack() }
+                    onNavigateToDetail = { itemId ->
+                        navController.navigate("item_detail/$itemId")
+                    },
+                    onBack = { navController.popBackStack() }
                 )
             }
         }
 
-
-        navigation(startDestination = "home", route = "main") {
-            composable("home") {
-                val viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
-                MainLayout(navController) {
-                    HomeScreen(
-                        navController,
-                        viewModel
-                    )
-                }
-            }
+        // --- ITEM FEATURE ---
+        composable("item_create") {
+            CreateItemScreen(
+                onBack = { navController.popBackStack() },
+                snackbarHostState = snackbarHostState
+            )
         }
 
-        navigation(startDestination = "item/create", route="item") {
-            composable("item/detail/{itemId}") {
-                val itemId = it.arguments?.getString("itemId")
-                Text("Detail")
-            }
-            composable("item/create") {
-                CreateItemScreen(
-                    onBack = { navController.popBackStack() },
-                    snackbarHostState = snackbarHostState
-                )
-            }
-        }
-
-        navigation(startDestination = "login", route = "auth") {
-            composable("login") {
-                val viewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
-                LoginScreen(
-                    viewModel = viewModel,
-                    snackbarHostState = snackbarHostState,
-                    onLoginSuccess = {
-                        navController.navigate("main/home") {
-                        popUpTo("login") { inclusive = true }
-                        }},
-                    onNavigateToRegister = { navController.navigate("register") }
-                ) }
-            composable("register") {
-                val viewModel: RegisterViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
-                RegisterScreen(
-                    viewModel = viewModel,
-                    snackbarHostState = snackbarHostState,
-                    onRegisterSuccess = { navController.navigate("login") },
-                    onNavigateToLogin = { navController.navigate("login") }
-            ) }
+        composable("item_detail/{itemId}") { backStackEntry ->
+            val itemId = backStackEntry.arguments?.getString("itemId")
+            // Detail Screen Kamu
+            Text("Detail Item ID: $itemId")
         }
     }
 }

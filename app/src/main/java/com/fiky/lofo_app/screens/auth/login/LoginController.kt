@@ -7,10 +7,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import coil.network.HttpException
+import com.fiky.lofo_app.MyApp
 import com.fiky.lofo_app.data.api.repositories.AuthRepository
+import com.fiky.lofo_app.data.api.retrofit.AuthPreferences
+import com.fiky.lofo_app.data.locals.dataStore
+import org.json.JSONObject
 
 class LoginViewModel: ViewModel() {
     private var authRepo: AuthRepository = AuthRepository();
+    private var authPreferences: AuthPreferences = AuthPreferences(MyApp.instance.dataStore);
 
     var state by mutableStateOf(LoginState())
         private set
@@ -33,10 +39,20 @@ class LoginViewModel: ViewModel() {
                 }
 
                 val result = authRepo.login(state.phone, state.password)
+                authPreferences.saveToken(result.accessToken)
+                android.util.Log.d("AUTH_CHECK", "Token yang terbaca: '${result.accessToken}'")
                 // sukses
                 onSuccess()
-            } catch (e: Exception) {
-                state = state.copy(error = e.message)
+            } catch (e: retrofit2.HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                val errorMessage = try {
+                    JSONObject(errorBody ?: "{}")
+                        .optString("message", "Terjadi kesalahan")
+                } catch (ex: Exception) {
+                    "Terjadi kesalahan"
+                }
+                state = state.copy(error = errorMessage)
+
             } finally {
                 state = state.copy(isLoading = false)
             }

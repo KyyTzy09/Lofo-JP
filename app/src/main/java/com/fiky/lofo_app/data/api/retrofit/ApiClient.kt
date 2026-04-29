@@ -1,25 +1,31 @@
 package com.fiky.lofo_app.data.api.retrofit
 
+import android.content.Context
+import com.fiky.lofo_app.data.locals.dataStore
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
+    fun create(context: Context): Retrofit {
+        val authPreferences = AuthPreferences(context.dataStore)
 
-    private const val BASE_URL = "http://127.0.0.1:8000/api"
+        val authInterceptor = AuthInterceptor(authPreferences)
 
-    private val logging = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
+        val logging = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .addInterceptor(authInterceptor)
+            .build()
+
+        return Retrofit.Builder()
+            .baseUrl("http://192.168.18.72:8000/api/")
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
     }
-
-    private val client = OkHttpClient.Builder()
-        .addInterceptor(logging)
-        .build()
-
-    val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .client(client)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
 }

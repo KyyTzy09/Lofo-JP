@@ -1,10 +1,11 @@
 package com.fiky.lofo_app.data.api.dto.auth
 
 import com.fiky.lofo_app.data.models.UserModel
-
+import com.google.gson.annotations.SerializedName
 data class RegisterRequest(
     val username: String,
-    val email: String,
+    @SerializedName("phone_number")
+    val phoneNumber: String,
     val password: String,
     val address: String
 )

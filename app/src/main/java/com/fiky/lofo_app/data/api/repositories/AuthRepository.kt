@@ -4,7 +4,7 @@ import com.fiky.lofo_app.data.api.dto.auth.LoginRequest
 import com.fiky.lofo_app.data.api.dto.auth.LoginResponse
 import com.fiky.lofo_app.data.api.dto.auth.RegisterRequest
 import com.fiky.lofo_app.data.api.dto.auth.RegisterResponse
-import com.fiky.lofo_app.data.api.retrofit.ApiService
+import com.fiky.lofo_app.data.api.services.ApiService
 
 class AuthRepository {
     suspend fun register(username: String, phoneNumber: String, password: String, address: String): RegisterResponse {

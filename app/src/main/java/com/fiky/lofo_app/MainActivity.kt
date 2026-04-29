@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fiky.lofo_app.composables.LofoToast
 import com.fiky.lofo_app.composables.ToastType
+import com.fiky.lofo_app.screens.auth.AuthViewModel
 import com.fiky.lofo_app.screens.onboarding.OnboardingScreen
 import com.fiky.lofo_app.ui.theme.LoFo_AppTheme
 
@@ -54,9 +55,9 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AppNavigation(
+                    AppRoot(
                         modifier = Modifier.padding(innerPadding),
-                        snackbarHostState
+                        snackbarHostState = snackbarHostState
                     )
                 }
             }

@@ -112,7 +112,7 @@ fun RegisterScreen(
 
                 FieldLabel("Nomor Telepon")
                 CustomTextField(
-                    value = state.phone,
+                    value = state.phoneNumber,
                     onValueChange = { viewModel.onPhoneChange(it) },
                     placeholder = "+62 812...",
                     leadingIcon = Icons.Default.Phone

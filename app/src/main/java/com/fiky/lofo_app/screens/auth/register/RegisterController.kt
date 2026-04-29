@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.fiky.lofo_app.data.api.repositories.AuthRepository
+import org.json.JSONObject
 
 class RegisterViewModel: ViewModel() {
     private var authRepo: AuthRepository = AuthRepository();
@@ -19,12 +20,8 @@ class RegisterViewModel: ViewModel() {
         state = state.copy(username = value)
     }
 
-    fun onEmailChange(value: String) {
-        state = state.copy(email = value)
-    }
-
     fun onPhoneChange(value: String) {
-        state = state.copy(phone = value)
+        state = state.copy(phoneNumber = value)
     }
 
     fun onAddressChange(value: String) {
@@ -44,7 +41,7 @@ class RegisterViewModel: ViewModel() {
             state = state.copy(isLoading = true, error = null)
 
             try {
-                if (state.username.isBlank() || state.password.isBlank() || state.phone.isBlank()) {
+                if (state.username.isBlank() || state.password.isBlank() || state.phoneNumber.isBlank()) {
                     throw Exception("Field wajib diisi")
                 }
 
@@ -52,10 +49,17 @@ class RegisterViewModel: ViewModel() {
                     throw Exception("Anda harus menyetujui syarat dan ketentuan")
                 }
 
-                authRepo.register(state.username, state.phone, state.password, state.address)
+                authRepo.register(state.username, state.phoneNumber, state.password, state.address)
                 onSuccess()
-            } catch (e: Exception) {
-                state = state.copy(error = e.message)
+            } catch (e: retrofit2.HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                val errorMessage = try {
+                    JSONObject(errorBody ?: "{}")
+                        .optString("message", "Terjadi kesalahan")
+                } catch (ex: Exception) {
+                    "Terjadi kesalahan"
+                }
+                state = state.copy(error = errorMessage)
             } finally {
                 state = state.copy(isLoading = false)
             }

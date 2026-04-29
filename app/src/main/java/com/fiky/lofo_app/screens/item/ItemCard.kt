@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.fiky.lofo_app.data.models.ItemModel
+import com.fiky.lofo_app.data.models.ItemStatus
 
 @Composable
 fun ItemCard(navController: NavController, item: ItemModel) {
@@ -58,8 +59,8 @@ fun ItemCard(navController: NavController, item: ItemModel) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = item.status,
-                    color = MaterialTheme.colorScheme.primary
+                    text = if (item.status == ItemStatus.TERSEDIA) "Tersedia" else "Hilang",
+                    style = MaterialTheme.typography.titleLarge
                 )
             }
         }
