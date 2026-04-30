@@ -20,7 +20,16 @@ data class ItemModel(
 //    val createdAt : String,
 //    @SerialName("updated_at")
 //    val updatedAt : String,
-    val user : UserModel?
+    val user : UserModel?,
+    @SerializedName("last_seen_location")
+    val location : ItemLocation?,
+    @SerializedName("last_seen_at")
+    val lastSeenAt: String?,
+
+    @SerializedName("created_at")
+    val createdAt: String?,
+    @SerializedName("updated_at")
+    val updatedAt: String?
 )
 
 enum class ItemStatus {
