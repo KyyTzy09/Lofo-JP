@@ -11,6 +11,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.fiky.lofo_app.layouts.MainLayout
 import com.fiky.lofo_app.screens.announcement.create.CreateAnnouncementScreen
+import com.fiky.lofo_app.screens.announcement.detail.AnnouncementDetailScreen
 import com.fiky.lofo_app.screens.auth.login.LoginScreen
 import com.fiky.lofo_app.screens.auth.login.LoginViewModel
 import com.fiky.lofo_app.screens.auth.register.RegisterScreen
@@ -103,6 +104,16 @@ fun AppNavigation(
         composable("announcement_create") {
             CreateAnnouncementScreen(
                 onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("announcement_detail/{announcementId}") { backStackEntry ->
+            val announcementId = backStackEntry.arguments?.getString("announcementId")
+                ?: return@composable
+            AnnouncementDetailScreen(
+                announcementId,
+                onBack = { navController.popBackStack() },
+                viewModel = viewModel()
             )
         }
     }

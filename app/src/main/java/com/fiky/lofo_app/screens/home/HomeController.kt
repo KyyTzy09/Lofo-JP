@@ -19,6 +19,10 @@ class HomeViewModel : ViewModel() {
                 status = ItemStatus.TERSEDIA,
                 qrUrl = null,
                 user = null,
+                location = null,
+                createdAt = null,
+                updatedAt = null,
+                lastSeenAt = null
             ),
             ItemModel(
                 itemId = "2",
@@ -28,7 +32,11 @@ class HomeViewModel : ViewModel() {
                 itemInfo = "Found 2h ago",
                 status = ItemStatus.TERSEDIA,
                 qrUrl = "http",
-                user = null
+                user = null,
+                location = null,
+                createdAt = null,
+                updatedAt = null,
+                lastSeenAt = null
             ),
             ItemModel(
                 itemId = "3",
@@ -38,7 +46,11 @@ class HomeViewModel : ViewModel() {
                 itemInfo = "YAyaya",
                 status = ItemStatus.TERSEDIA,
                 qrUrl = null,
-                user = null
+                user = null,
+                location = null,
+                createdAt = null,
+                updatedAt = null,
+                lastSeenAt = null
             )
         )
     )

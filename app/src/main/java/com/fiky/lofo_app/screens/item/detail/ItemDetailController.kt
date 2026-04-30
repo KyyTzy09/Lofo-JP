@@ -37,7 +37,11 @@ class ItemDetailViewModel : ViewModel() {
                     itemInfo = "Handcrafted from premium full-grain Italian leather, this portfolio bag features a minimalist silhouette designed for the modern professional. Includes a padded compartment for a 14-inch laptop, reinforced brass hardware, and a signature concierge tracking tag. The cognac patina develops uniquely over time, making it a truly personal accessory.",
                     status = ItemStatus.TERSEDIA,
                     qrUrl = "qr_id_portfolio_123",
-                    user = null // Akan ditampilkan sebagai Julian Sterling di UI secara dummy
+                    user = null,
+                    location = null,
+                    createdAt = null,
+                    updatedAt = null,
+                    lastSeenAt = null
                 )
                 
                 state = state.copy(item = dummyItem)

@@ -25,7 +25,7 @@ import com.fiky.lofo_app.data.models.ItemStatus
 fun ItemCard(navController: NavController, item: ItemModel) {
     Card(
         onClick = {
-            navController.navigate("item_detail/dsdishdus")
+            navController.navigate("announcement_detail/dsdishdus")
         },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
