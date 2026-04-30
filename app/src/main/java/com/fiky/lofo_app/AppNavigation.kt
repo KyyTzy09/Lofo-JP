@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.fiky.lofo_app.layouts.MainLayout
+import com.fiky.lofo_app.screens.announcement.create.CreateAnnouncementScreen
 import com.fiky.lofo_app.screens.auth.login.LoginScreen
 import com.fiky.lofo_app.screens.auth.login.LoginViewModel
 import com.fiky.lofo_app.screens.auth.register.RegisterScreen
@@ -92,9 +93,15 @@ fun AppNavigation(
         composable("item_detail/{itemId}") { backStackEntry ->
             val itemId = backStackEntry.arguments?.getString("itemId")
                 ?: return@composable
-            // Detail Screen Kamu
             ItemDetailScreen(
                 itemId = itemId,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // --- ANNOUNCEMENT FEATURE ---
+        composable("announcement_create") {
+            CreateAnnouncementScreen(
                 onBack = { navController.popBackStack() }
             )
         }
