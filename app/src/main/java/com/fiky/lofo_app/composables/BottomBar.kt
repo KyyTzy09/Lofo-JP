@@ -1,15 +1,20 @@
 package com.fiky.lofo_app.composables
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AllInbox
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCodeScanner
@@ -29,7 +34,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.fiky.lofo_app.ui.theme.Primary
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
@@ -39,40 +46,31 @@ data class NavItem(
     val icon: ImageVector,
     val label: String
 )
-
 @Composable
 fun BottomNavBar(navController: NavHostController) {
     val items = listOf(
         NavItem("home", Icons.Default.Home, "Home"),
-        NavItem("announcement_create", Icons.Default.Add, "Add"),
+        NavItem("items", Icons.Default.AllInbox, "Items"),
         NavItem("scan", Icons.Default.QrCodeScanner, "Scan"),
-        NavItem("item_create", Icons.Default.Person, "Profile"),
+        NavItem("announcement_create", Icons.Default.Add, "Add"),
+        NavItem("profile", Icons.Default.Person, "Profile"),
     )
 
     Surface(
         modifier = Modifier
+            .fillMaxWidth()
             .graphicsLayer {
-                shape = RoundedCornerShape(
-                    topStart = 15.dp,
-                    topEnd = 15.dp,
-                    bottomStart = 0.dp,
-                    bottomEnd = 0.dp
-                )
+                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
                 clip = true
             }
-            .fillMaxWidth()
-            .shadow(elevation = 10.dp, shape = RoundedCornerShape(
-                topStart = 15.dp,
-                topEnd = 15.dp,
-                bottomStart = 0.dp,
-                bottomEnd = 0.dp
-            )),
-        color = Color(0xFF1A1A1A),
-        tonalElevation = 8.dp
+            .shadow(elevation = 15.dp),
+        color = Color(0xFF1A1A1A)
     ) {
         NavigationBar(
             containerColor = Color.Transparent,
-            modifier = Modifier.height(80.dp),
+            modifier = Modifier
+                .height(85.dp)
+                .padding(horizontal = 5.dp),
             windowInsets = WindowInsets(0.dp)
         ) {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -80,44 +78,60 @@ fun BottomNavBar(navController: NavHostController) {
 
             items.forEach { item ->
                 val selected = currentRoute == item.route
+                val isScan = item.route == "scan"
+                val scale by animateFloatAsState(targetValue = if (selected) 1.2f else 1.0f)
+
                 NavigationBarItem(
                     selected = selected,
                     onClick = {
-                        if (currentRoute != item.route) {
-                            navController.navigate(item.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
+                        navController.navigate(item.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
                             }
+                            launchSingleTop = true
+                            restoreState = true
                         }
                     },
                     icon = {
-                        val size by animateDpAsState(targetValue = if (selected) 30.dp else 24.dp)
-
-                        Icon(
-                            imageVector = item.icon,
-                            contentDescription = item.label,
-                            modifier = Modifier.size(size)
-                        )
+                        if (isScan) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .background(
+                                        color = if (selected) Primary else Primary.copy(alpha = 0.9f),
+                                        shape = CircleShape
+                                    )
+                                    .scale(scale)
+                                    .shadow(elevation = 8.dp, shape = CircleShape)
+                            ) {
+                                Icon(
+                                    imageVector = item.icon,
+                                    contentDescription = item.label,
+                                    modifier = Modifier.size(32.dp),
+                                    tint = Color.White
+                                )
+                            }
+                        } else {
+                            val size by animateDpAsState(targetValue = if (selected) 28.dp else 24.dp)
+                            Icon(
+                                imageVector = item.icon,
+                                contentDescription = item.label,
+                                modifier = Modifier.size(size)
+                            )
+                        }
                     },
                     label = {
-                        if (selected) {
-                            Text(
-                                text = item.label,
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.ExtraBold
-                            )
+                        // Scan tidak butuh label karena iconnya sudah besar & jelas
+                        if (selected && !isScan) {
+                            Text(color = Color.White, text = item.label, fontWeight = FontWeight.Bold)
                         }
                     },
                     alwaysShowLabel = false,
                     colors = NavigationBarItemDefaults.colors(
-                        indicatorColor = Primary.copy(alpha = 0.2f), // Lingkaran halus di belakang icon
-                        selectedIconColor = Primary,
-                        selectedTextColor = Primary,
-                        unselectedIconColor = Color.Gray.copy(alpha = 0.6f),
-                        unselectedTextColor = Color.Transparent
+                        indicatorColor = if (isScan) Color.Transparent else Primary.copy(alpha = 0.1f),
+                        selectedIconColor = if (isScan) Color.White else Primary,
+                        unselectedIconColor = Color.Gray
                     )
                 )
             }

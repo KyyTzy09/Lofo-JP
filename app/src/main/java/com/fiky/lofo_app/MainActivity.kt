@@ -28,9 +28,8 @@ import org.osmdroid.config.Configuration
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Konfigurasi OSMDroid
+
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
-        // Ganti dengan package name kamu agar tidak diblokir server peta
         Configuration.getInstance().userAgentValue = "com.fiky.lofo_app"
         enableEdgeToEdge()
         setContent {
