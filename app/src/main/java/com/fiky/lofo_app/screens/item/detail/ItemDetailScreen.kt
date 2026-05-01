@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.QrCode2
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,7 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.fiky.lofo_app.MyApp
 import com.fiky.lofo_app.composables.OpenStreetMap
+import com.fiky.lofo_app.utils.ImageDownloader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,6 +48,7 @@ fun ItemDetailScreen(
 ) {
     val state = viewModel.state
     val scrollState = rememberScrollState()
+    val downloader = remember { ImageDownloader(MyApp.instance) }
 
     LaunchedEffect(itemId) {
         viewModel.getItemDetail(itemId)
@@ -209,9 +213,14 @@ fun ItemDetailScreen(
                                                 color = MaterialTheme.colorScheme.onTertiaryContainer
                                             )
                                             Text(
-                                                text = "Julian Sterling",
+                                                text = item.user?.profile?.username ?: "Tidak diketahui",
                                                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                                                 color = MaterialTheme.colorScheme.primary
+                                            )
+                                            Text(
+                                                text = item.user?.phoneNumber ?: "62******",
+                                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+                                                color = MaterialTheme.colorScheme.secondary
                                             )
                                         }
                                     }
@@ -246,17 +255,17 @@ fun ItemDetailScreen(
                                 ) {
                                     Box(
                                         modifier = Modifier
-                                            .size(128.dp)
+                                            .size(130.dp)
                                             .clip(RoundedCornerShape(12.dp))
                                             .background(Color.White)
                                             .border(4.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp)),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Icon(
-                                            Icons.Default.QrCode2,
+                                        AsyncImage(
+                                            model = item.qrUrl,
                                             contentDescription = "QR Code",
-                                            modifier = Modifier.size(96.dp),
-                                            tint = MaterialTheme.colorScheme.primary
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentScale = ContentScale.Fit
                                         )
                                     }
                                 }
@@ -269,7 +278,9 @@ fun ItemDetailScreen(
                                 )
                                 Spacer(modifier = Modifier.height(24.dp))
                                 Button(
-                                    onClick = { /* Download */ },
+                                    onClick = {
+                                        downloader.downloadFile(item.qrUrl?: "", "${item.itemName}_qr.png")
+                                    },
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(56.dp),

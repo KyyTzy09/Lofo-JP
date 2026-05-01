@@ -5,7 +5,9 @@ import com.fiky.lofo_app.data.api.dto.item.CreateItemResponse
 import com.fiky.lofo_app.data.api.dto.item.ItemDetailResponse
 import com.fiky.lofo_app.data.api.dto.item.UpdateItemRequest
 import com.fiky.lofo_app.data.api.services.ApiService
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class ItemRepository {
     suspend fun GetAllItems(): BulkItemResponse {
@@ -14,8 +16,8 @@ class ItemRepository {
 
     suspend fun CreateItem(itemName: String, itemInfo: String, image: MultipartBody.Part): CreateItemResponse {
         return ApiService.itemService.createItem(
-            itemName,
-            itemInfo,
+            itemName.toRequestBody("text/plain".toMediaType()),
+            itemInfo.toRequestBody("text/plain".toMediaType()),
             image
         )
     }

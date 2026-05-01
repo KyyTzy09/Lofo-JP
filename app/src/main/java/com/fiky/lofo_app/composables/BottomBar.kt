@@ -52,7 +52,7 @@ fun BottomNavBar(navController: NavHostController) {
         NavItem("home", Icons.Default.Home, "Home"),
         NavItem("items", Icons.Default.AllInbox, "Items"),
         NavItem("scan", Icons.Default.QrCodeScanner, "Scan"),
-        NavItem("announcement_create", Icons.Default.Add, "Add"),
+        NavItem("item_create", Icons.Default.Add, "Add"),
         NavItem("profile", Icons.Default.Person, "Profile"),
     )
 

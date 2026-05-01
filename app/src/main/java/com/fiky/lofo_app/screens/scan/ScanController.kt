@@ -5,8 +5,7 @@ import androidx.compose.runtime.remember
 
 class ScanController(
     val state: ScanState,
-    private val onCodeScanned: (String) -> Unit
-) {
+    private val onCodeScanned: (String) -> Unit) {
     fun toggleFlashlight() {
         state.isFlashlightOn = !state.isFlashlightOn
     }

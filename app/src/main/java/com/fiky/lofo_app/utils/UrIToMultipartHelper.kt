@@ -10,8 +10,7 @@ import java.io.File
 object UrIToMultipartHelper {
     private fun getFileFromUri(context: Context, uri: Uri): File {
         val contentResolver = context.contentResolver
-        // Membuat file sementara di cache aplikasi
-        val tempFile = File(context.cacheDir, "temp_image_${System.currentTimeMillis()}.jpg")
+       val tempFile = File(context.cacheDir, "temp_image_${System.currentTimeMillis()}.jpg")
 
         contentResolver.openInputStream(uri)?.use { inputStream ->
             tempFile.outputStream().use { outputStream ->
@@ -25,7 +24,6 @@ object UrIToMultipartHelper {
         val file = getFileFromUri(context, uri)
         val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
         val body = MultipartBody.Part.createFormData(name, file.name, requestFile)
-
         return body
     }
 }

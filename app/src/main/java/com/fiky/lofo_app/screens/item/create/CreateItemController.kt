@@ -51,7 +51,7 @@ class CreateItemViewModel: ViewModel() {
                     image = image
                 )
 
-                onSuccess(created?.data?.itemId ?: "")
+                onSuccess(created.data.itemId ?: "")
             } catch (e: Exception) {
                 state = state.copy(error = e.message)
                 onError(e.message ?: "Terjadi Kesalahan")

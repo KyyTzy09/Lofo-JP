@@ -26,7 +26,8 @@ import kotlinx.coroutines.launch
 fun CreateAnnouncementScreen(
     onBack: () -> Unit,
     viewModel: CreateAnnouncementViewModel = viewModel(),
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    onSuccessfulCreate: (id: String) -> Unit = {}
 ) {
     val state = viewModel.state
     val scrollState = rememberScrollState()
@@ -274,7 +275,7 @@ fun CreateAnnouncementScreen(
                                         "Pengumuman berhasil dibuat",
                                         withDismissAction = true
                                     )
-                                    onBack()
+                                    onSuccessfulCreate(it)
                                 }
                             },
                             onError = {

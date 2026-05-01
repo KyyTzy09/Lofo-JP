@@ -106,7 +106,13 @@ fun AppNavigation(
         // --- ANNOUNCEMENT FEATURE ---
         composable("announcement_create") {
             CreateAnnouncementScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                snackbarHostState=snackbarHostState,
+                onSuccessfulCreate = {
+                    navController.navigate("item_detail/$it") {
+                        popUpTo("home") { inclusive = true }
+                    }
+                }
             )
         }
 

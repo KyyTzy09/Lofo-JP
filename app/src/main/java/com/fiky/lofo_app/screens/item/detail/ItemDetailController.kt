@@ -2,13 +2,13 @@ package com.fiky.lofo_app.screens.item.detail
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fiky.lofo_app.MyApp
 import com.fiky.lofo_app.data.api.repositories.ItemRepository
-import com.fiky.lofo_app.data.models.ItemModel
-import com.fiky.lofo_app.data.models.ItemStatus
-import kotlinx.coroutines.delay
+import com.fiky.lofo_app.utils.ImageDownloader
 import kotlinx.coroutines.launch
 
 class ItemDetailViewModel : ViewModel() {

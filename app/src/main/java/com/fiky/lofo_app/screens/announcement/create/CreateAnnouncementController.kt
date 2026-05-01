@@ -21,7 +21,7 @@ class CreateAnnouncementViewModel : ViewModel() {
     fun onItemSelected(value: String?) { state = state.copy(selectedItem = value) }
     fun onDateChange(value: String) { state = state.copy(dateLost = value) }
 
-    fun createAnnouncement(onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun createAnnouncement(onSuccess: (id:String) -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             state = state.copy(isLoading = true, error = null)
             try {
@@ -29,7 +29,7 @@ class CreateAnnouncementViewModel : ViewModel() {
                     throw Exception("Judul, Lokasi, dan Tanggal wajib diisi")
                 }
 
-                announcementRepo.CreateAnnouncement(
+                val created = announcementRepo.CreateAnnouncement(
                     CreateAnnouncementRequest(
                         title = state.title,
                         description = state.description,
@@ -37,8 +37,7 @@ class CreateAnnouncementViewModel : ViewModel() {
                         lostAt = state.dateLost
                     )
                 )
-
-                onSuccess()
+                onSuccess(created.data.announcementId)
             } catch (e: Exception) {
                 state = state.copy(error = e.message ?: "Terjadi kesalahan")
                 onError(e.message ?: "Terjadi kesalahan");
