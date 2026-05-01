@@ -5,15 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-//import com.fiky.lofo_app.data.api.repositories.AnnouncementRepository
-import com.fiky.lofo_app.data.models.AnnouncementModel
+import com.fiky.lofo_app.data.api.repositories.AnnouncementRepository
 import kotlinx.coroutines.launch
 
 
-
 class AnnouncementDetailViewModel : ViewModel() {
-    // Inisialisasi Repo (Sesuaikan dengan arsitektur DI kamu)
-//    private val repository = AnnouncementRepository()
+    private val announcementRepo = AnnouncementRepository()
 
     var state by mutableStateOf(AnnouncementDetailState())
         private set
@@ -22,9 +19,8 @@ class AnnouncementDetailViewModel : ViewModel() {
         viewModelScope.launch {
             state = state.copy(isLoading = true, error = null)
             try {
-                // Asumsi repository punya fungsi getAnnouncementById
-//                val result = repository.getAnnouncementById(id)
-//                state = state.copy(announcement = result)
+                val result = announcementRepo.GetAnnouncementDetail(id)
+                state = state.copy(announcement = result.data)
             } catch (e: Exception) {
                 state = state.copy(error = e.localizedMessage ?: "Gagal memuat detail")
             } finally {

@@ -11,4 +11,8 @@ object ApiService {
     val itemService: ItemService by lazy {
         ApiClient.create(MyApp.instance).create(ItemService::class.java)
     }
+
+    val announcementService: AnnouncementService by lazy {
+        ApiClient.create(MyApp.instance).create(AnnouncementService::class.java)
+    }
 }

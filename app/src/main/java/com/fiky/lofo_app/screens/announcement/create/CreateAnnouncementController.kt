@@ -5,11 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementRequest
+import com.fiky.lofo_app.data.api.repositories.AnnouncementRepository
 import kotlinx.coroutines.launch
 
 class CreateAnnouncementViewModel : ViewModel() {
-    // Diasumsikan repository sudah ada
-    // private val announcementRepo = AnnouncementRepository()
+     private val announcementRepo = AnnouncementRepository()
 
     var state by mutableStateOf(CreateAnnouncementState())
         private set
@@ -20,7 +21,7 @@ class CreateAnnouncementViewModel : ViewModel() {
     fun onItemSelected(value: String?) { state = state.copy(selectedItem = value) }
     fun onDateChange(value: String) { state = state.copy(dateLost = value) }
 
-    fun createAnnouncement(onSuccess: () -> Unit) {
+    fun createAnnouncement(onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             state = state.copy(isLoading = true, error = null)
             try {
@@ -28,11 +29,19 @@ class CreateAnnouncementViewModel : ViewModel() {
                     throw Exception("Judul, Lokasi, dan Tanggal wajib diisi")
                 }
 
-                // announcementRepo.create(...)
+                announcementRepo.CreateAnnouncement(
+                    CreateAnnouncementRequest(
+                        title = state.title,
+                        description = state.description,
+                        location = state.lastLocation,
+                        lostAt = state.dateLost
+                    )
+                )
 
                 onSuccess()
             } catch (e: Exception) {
                 state = state.copy(error = e.message ?: "Terjadi kesalahan")
+                onError(e.message ?: "Terjadi kesalahan");
             } finally {
                 state = state.copy(isLoading = false)
             }
