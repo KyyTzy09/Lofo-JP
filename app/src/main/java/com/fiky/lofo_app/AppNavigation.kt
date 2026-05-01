@@ -73,12 +73,14 @@ fun AppNavigation(
         }
 
         composable("scan") {
+            MainLayout(navController) {
                 ScanScreen(
                     onNavigateToDetail = { itemId ->
                         navController.navigate("item_detail/$itemId")
                     },
                     onBack = { navController.popBackStack() }
                 )
+            }
         }
 
         // --- ITEM FEATURE ---
