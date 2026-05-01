@@ -19,15 +19,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateAnnouncementScreen(
     onBack: () -> Unit,
-    viewModel: CreateAnnouncementViewModel = viewModel()
+    viewModel: CreateAnnouncementViewModel = viewModel(),
+    snackbarHostState: SnackbarHostState
 ) {
     val state = viewModel.state
     val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
+
     var tempDate by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
@@ -263,9 +267,26 @@ fun CreateAnnouncementScreen(
 
                     // Submit Button
                     Button(
-                        onClick = { viewModel.createAnnouncement {
-
-                        }},
+                        onClick = { viewModel.createAnnouncement(
+                            onSuccess = {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        "Pengumuman berhasil dibuat",
+                                        withDismissAction = true
+                                    )
+                                    onBack()
+                                }
+                            },
+                            onError = {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        it,
+                                        withDismissAction = true
+                                    )
+                                    onBack()
+                                }
+                            }
+                        )},
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),

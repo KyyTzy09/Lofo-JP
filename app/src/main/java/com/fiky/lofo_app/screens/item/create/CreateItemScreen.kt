@@ -322,14 +322,19 @@ fun CreateItemScreen(
                 )
                 
                 Button(
-                    onClick = { viewModel.create {
+                    onClick = { viewModel.create(
+                        onSuccess = {
                         val itemId = it
                         scope.launch {
-                            ToastHelper.show(snackbarHostState, "Sukses", "Login Berhasil!", ToastType.SUCCESS)
+                            ToastHelper.show(snackbarHostState, "Sukses Menambahkan Barang", "Barang telah ditambahkan!", ToastType.SUCCESS)
                         }
-
-                        onSuccess(itemId)
-                    } },
+                        onSuccess(itemId) },
+                        onError = {
+                            scope.launch {
+                                ToastHelper.show(snackbarHostState, "Gagal Menambahkan Barang", it, ToastType.ERROR)
+                            }
+                        }
+                    )},
                     enabled = !state.isLoading,
                     modifier = Modifier
                         .fillMaxWidth()

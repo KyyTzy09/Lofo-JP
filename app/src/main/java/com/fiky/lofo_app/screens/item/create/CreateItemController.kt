@@ -31,7 +31,7 @@ class CreateItemViewModel: ViewModel() {
         state = state.copy(selectedImageUri = uri)
     }
 
-    fun create(onSuccess: (itemId: String) -> Unit) {
+    fun create(onSuccess: (itemId: String) -> Unit, onError: (message: String) -> Unit) {
         viewModelScope.launch {
             state = state.copy(isLoading = true, error = null)
 
@@ -54,6 +54,7 @@ class CreateItemViewModel: ViewModel() {
                 onSuccess(created?.data?.itemId ?: "")
             } catch (e: Exception) {
                 state = state.copy(error = e.message)
+                onError(e.message ?: "Terjadi Kesalahan")
             } finally {
                 state = state.copy(isLoading = false)
             }
