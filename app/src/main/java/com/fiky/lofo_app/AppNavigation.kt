@@ -1,13 +1,11 @@
 package com.fiky.lofo_app
 
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.fiky.lofo_app.layouts.MainLayout
 import com.fiky.lofo_app.screens.announcement.create.CreateAnnouncementScreen
@@ -18,7 +16,7 @@ import com.fiky.lofo_app.screens.auth.register.RegisterScreen
 import com.fiky.lofo_app.screens.auth.register.RegisterViewModel
 import com.fiky.lofo_app.screens.home.HomeScreen
 import com.fiky.lofo_app.screens.home.HomeViewModel
-import com.fiky.lofo_app.screens.item.CreateItemScreen
+import com.fiky.lofo_app.screens.item.create.CreateItemScreen
 import com.fiky.lofo_app.screens.item.detail.ItemDetailScreen
 import com.fiky.lofo_app.screens.onboarding.OnboardingScreen
 import com.fiky.lofo_app.screens.scan.ScanScreen
@@ -87,6 +85,9 @@ fun AppNavigation(
         composable("item_create") {
             CreateItemScreen(
                 onBack = { navController.popBackStack() },
+                onSuccess = {
+                    navController.navigate("item_detail/$it")
+                },
                 snackbarHostState = snackbarHostState
             )
         }

@@ -1,9 +1,6 @@
-package com.fiky.lofo_app.screens.item
+package com.fiky.lofo_app.screens.item.create
 
 import android.net.Uri
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 
 
 data class CreateItemState(

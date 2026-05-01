@@ -17,7 +17,7 @@ import retrofit2.http.Query
 
 interface ItemService {
     @GET("items")
-    suspend fun getUserItems(
+    suspend fun getItems(
         @Query("status") status: String? = null,
         @Query("search") search: String? = null
     ): BulkItemResponse

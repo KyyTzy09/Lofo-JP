@@ -7,4 +7,8 @@ object ApiService {
     val authService: AuthService by lazy {
         ApiClient.create(MyApp.instance).create(AuthService::class.java)
     }
+
+    val itemService: ItemService by lazy {
+        ApiClient.create(MyApp.instance).create(ItemService::class.java)
+    }
 }

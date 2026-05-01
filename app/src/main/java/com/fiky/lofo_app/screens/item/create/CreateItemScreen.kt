@@ -1,4 +1,4 @@
-package com.fiky.lofo_app.screens.item
+package com.fiky.lofo_app.screens.item.create
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Publish
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +41,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -51,15 +53,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.fiky.lofo_app.composables.ToastType
+import com.fiky.lofo_app.utils.ToastHelper
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateItemScreen(
-    viewModel: CreateItemViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    viewModel: CreateItemViewModel = viewModel(),
+    onSuccess: (id: String) -> Unit = {},
     onBack: () -> Unit = {},
     snackbarHostState: SnackbarHostState
 ) {
+   val scope = rememberCoroutineScope()
     val state = viewModel.state
     val photoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -315,7 +323,12 @@ fun CreateItemScreen(
                 
                 Button(
                     onClick = { viewModel.create {
-                        onBack()
+                        val itemId = it
+                        scope.launch {
+                            ToastHelper.show(snackbarHostState, "Sukses", "Login Berhasil!", ToastType.SUCCESS)
+                        }
+
+                        onSuccess(itemId)
                     } },
                     enabled = !state.isLoading,
                     modifier = Modifier
@@ -327,13 +340,21 @@ fun CreateItemScreen(
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Publish, contentDescription = null)
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            if (!state.isLoading) "Tambahkan"  else  "Menambahkan..."  ,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
+                        if (!state.isLoading) {
+                            Icon(Icons.Default.Publish, contentDescription = null)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                "Tambahkan",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        } else {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        }
                     }
                 }
 
