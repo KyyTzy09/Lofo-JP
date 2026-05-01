@@ -9,11 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.fiky.lofo_app.data.models.AnnouncementModel
 import kotlinx.coroutines.launch
 
-data class AnnouncementDetailState(
-    val announcement: AnnouncementModel? = null,
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
+
 
 class AnnouncementDetailViewModel : ViewModel() {
     // Inisialisasi Repo (Sesuaikan dengan arsitektur DI kamu)
