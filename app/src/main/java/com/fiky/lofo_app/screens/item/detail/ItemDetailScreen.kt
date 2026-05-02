@@ -274,7 +274,7 @@ fun ItemDetailScreen(
                                     text = "Qr unik yang dihasilkan khusus untuk barang ini.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                    textAlign = TextAlign.Center
                                 )
                                 Spacer(modifier = Modifier.height(24.dp))
                                 Button(
