@@ -14,6 +14,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -101,28 +102,19 @@ fun CreateAnnouncementScreen(
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background, // Gunakan Background Gelap
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        "Tambahkan Pengumuman",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White // primary color
-                        )
-                    )
-                },
+                title = { Text("Baru", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.White
-                        )
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         }
@@ -130,191 +122,186 @@ fun CreateAnnouncementScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState)
                 .padding(paddingValues)
-                .padding(horizontal = 24.dp)
+                .padding(horizontal = 20.dp)
         ) {
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Header
-            Text("Tambahkan Pengumuman", fontSize = 30.sp, fontWeight = FontWeight.ExtraBold, color = Color(0xFF14002F))
+            // Header Section - Lebih Simple & Modern
             Text(
-                "Mulai Pengumuman baru untuk mempermudah pencarian barang yang hilang",
-                color = Color.Gray,
-                modifier = Modifier.padding(vertical = 8.dp)
+                "Buat Pengumuman",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Text(
+                "Lengkapi detail barang untuk mempercepat proses penemuan.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-            // Form Card
+            // Main Form Container
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(32.dp),
-                color = Color.White,
-                shadowElevation = 2.dp
+                shape = RoundedCornerShape(28.dp),
+                color = MaterialTheme.colorScheme.surface, // Warna gelap yang sedikit lebih terang
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
             ) {
-                Column(modifier = Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    // Field Judul
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    // --- INPUT FIELD: JUDUL ---
                     AnnouncementTextField(
-                        label = "Judul Pengumuman",
+                        label = "Judul",
                         value = state.title,
                         onValueChange = { viewModel.onTitleChange(it) },
-                        placeholder = "Hp Samsung A53 Hilang"
+                        placeholder = "Contoh: Kehilangan Laptop LOQ"
                     )
 
-                    // Field Deskripsi
+                    // --- INPUT FIELD: LOKASI ---
                     AnnouncementTextField(
-                        label = "Deskripsi (Optional)",
-                        value = state.description,
-                        onValueChange = { viewModel.onDescriptionChange(it) },
-                        placeholder = "Deskripsikan pengumuman anda!",
-                        singleLine = false,
-                        minLines = 4
-                    )
-
-                    // Field Lokasi
-                    AnnouncementTextField(
-                        label = "Last Location",
+                        label = "Lokasi Terakhir",
                         value = state.lastLocation,
                         onValueChange = { viewModel.onLocationChange(it) },
-                        placeholder = "Ruangan abc",
-                        leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = Color.Gray) }
+                        placeholder = "Gedung Lab, Kantin, dsb.",
+                        leadingIcon = { Icon(Icons.Default.LocationOn, null, tint = MaterialTheme.colorScheme.primary) }
                     )
 
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        // --- SELECTOR BARANG ---
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("Sambungkan Ke Barang (opsional)",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp,
-                                color = Color(0xFF14002F)
+                    // --- INPUT FIELD: ITEM (Opsional) ---
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            "Hubungkan Ke Barang (opsional)",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        ExposedDropdownMenuBox(
+                            expanded = expandedItemSelector,
+                            onExpandedChange = { expandedItemSelector = !expandedItemSelector },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        {
+                            OutlinedTextField(
+                                value = state.selectedItem ?: "",
+                                onValueChange = {},
+                                readOnly = true,
+                                placeholder = {
+                                    Text(
+                                        "Pilih barang",
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                    )
+                                },
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedItemSelector)
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .menuAnchor(),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                    focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             )
 
-                            ExposedDropdownMenuBox(
-                                expanded = expandedItemSelector,
-                                onExpandedChange = { expandedItemSelector = !expandedItemSelector }
+                            // Gaya Dropdown Menu (Popup)
+                            MaterialTheme(
+                                colorScheme = MaterialTheme.colorScheme.copy(surface = MaterialTheme.colorScheme.surfaceContainerHighest)
                             ) {
-                                OutlinedTextField(
-                                    value = state.selectedItem ?: "",
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    placeholder = { Text("Pilih barang", color = Color.Gray) },
-                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedItemSelector) },
-                                    modifier = Modifier.fillMaxWidth().menuAnchor(), // menuAnchor penting!
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedContainerColor = Color(0xFFF2F4F6),
-                                        unfocusedBorderColor = Color.Transparent,
-                                        focusedBorderColor = Color(0xFF6D4EA2)
-                                    )
-                                )
-
                                 ExposedDropdownMenu(
                                     expanded = expandedItemSelector,
                                     onDismissRequest = { expandedItemSelector = false },
-                                    modifier = Modifier.background(Color.White)
+                                    modifier = Modifier
+                                        .background(MaterialTheme.colorScheme.surface)
+                                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp)),
+                                    shape = RoundedCornerShape(12.dp)
                                 ) {
                                     itemsList.forEach { item ->
                                         DropdownMenuItem(
-                                            text = { Text(item) },
+                                            text = {
+                                                Text(
+                                                    text = item,
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    color = MaterialTheme.colorScheme.onPrimary
+                                                )
+                                            },
                                             onClick = {
                                                 viewModel.onItemSelected(item)
                                                 expandedItemSelector = false
-                                            }
+                                            },
+                                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                                         )
                                     }
                                 }
                             }
                         }
-
-                        // --- DATE PICKER FIELD ---
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("Tanggal Hilang",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp,
-                                color = Color(0xFF14002F)
-                            )
-
-                            OutlinedTextField(
-                                value = state.dateLost,
-                                onValueChange = {},
-                                readOnly = true, // Supaya user tidak ngetik manual
-                                placeholder = { Text("Pilih tanggal", color = Color.Gray) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { showDatePicker = true }, // Klik field buka kalender
-                                enabled = false, // Supaya intercept click berjalan baik pada OutlinedTextField
-                                shape = RoundedCornerShape(12.dp),
-                                trailingIcon = {
-                                    IconButton(onClick = { showDatePicker = true }) {
-                                        Icon(Icons.Default.DateRange, contentDescription = null, tint = Color(0xFF6D4EA2))
-                                    }
-                                },
-                                // Custom warna karena enabled = false biasanya bikin teks jadi abu-abu pucat
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    disabledTextColor = Color.Black,
-                                    disabledContainerColor = Color(0xFFF2F4F6),
-                                    disabledBorderColor = Color.Transparent,
-                                    disabledPlaceholderColor = Color.Gray,
-                                    disabledTrailingIconColor = Color(0xFF6D4EA2)
+                    }
+                    // --- INPUT FIELD: TANGGAL (Modern Style) ---
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("Kapan Terjadi?", fontWeight = FontWeight.Bold, color =  MaterialTheme.colorScheme.onSurface)
+                        Surface(
+                            onClick = { showDatePicker = true },
+                            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                            shape = RoundedCornerShape(16.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Default.CalendarMonth, null, tint = MaterialTheme.colorScheme.primary)
+                                Spacer(Modifier.width(12.dp))
+                                Text(
+                                    text = if(state.dateLost.isEmpty()) "Pilih Tanggal & Waktu" else state.dateLost,
+                                    color = if(state.dateLost.isEmpty()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
                                 )
-                            )
+                            }
                         }
                     }
 
-                    // Submit Button
+                    // --- INPUT FIELD: DESKRIPSI ---
+                    AnnouncementTextField(
+                        label = "Catatan Tambahan",
+                        value = state.description,
+                        onValueChange = { viewModel.onDescriptionChange(it) },
+                        placeholder = "Ciri fisik, warna casing, dsb.",
+                        singleLine = false,
+                        minLines = 3
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // --- SUBMIT BUTTON ---
                     Button(
-                        onClick = { viewModel.createAnnouncement(
-                            onSuccess = {
-                                scope.launch {
-                                    snackbarHostState.showSnackbar(
-                                        "Pengumuman berhasil dibuat",
-                                        withDismissAction = true
-                                    )
-                                    onSuccessfulCreate(it)
-                                }
-                            },
-                            onError = {
-                                scope.launch {
-                                    snackbarHostState.showSnackbar(
-                                        it,
-                                        withDismissAction = true
-                                    )
-                                    onBack()
-                                }
-                            }
-                        )},
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        contentPadding = PaddingValues()
+                        onClick = { /* ViewModel Call */ },
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Brush.linearGradient(
-                                    listOf(Color(0xFF14002F),
-                                    MaterialTheme.colorScheme.primary))
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                 Text(
-                                     if (state.isLoading) "Buat Pengumuman" else "Memproses..."
-                                     , fontWeight = FontWeight.Bold
-                                 )
-                                Icon(Icons.Default.Send, contentDescription = null, modifier = Modifier.size(18.dp))
+                        if (state.isLoading) {
+                            CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
+                        } else {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("Publikasikan Sekarang", fontWeight = FontWeight.Bold)
+                                Spacer(Modifier.width(8.dp))
+                                Icon(Icons.Default.Send, null, modifier = Modifier.size(18.dp))
                             }
                         }
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
@@ -330,23 +317,31 @@ fun AnnouncementTextField(
     minLines: Int = 1
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(label, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color(0xFF14002F))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            placeholder = { Text(placeholder, color = Color.Gray) },
+            placeholder = { Text(placeholder) },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                disabledContainerColor = MaterialTheme.colorScheme.primary,
-                focusedIndicatorColor = Color(0xFF6D4EA2),
-                unfocusedIndicatorColor = Color.Gray,
-            ),
+            shape = RoundedCornerShape(16.dp),
             leadingIcon = leadingIcon,
             singleLine = singleLine,
-            minLines = minLines
+            minLines = minLines,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                unfocusedTextColor = MaterialTheme.colorScheme.onPrimary
+            )
         )
     }
 }

@@ -12,14 +12,11 @@ val Secondary = Color(0xFFB39DDB)
 val OnSecondary = Color(0xFF311B92)
 val SecondaryContainer = Color(0xFF4527A0)
 val OnSecondaryContainer = Color(0xFFEDE7F6)
-
 val Background = Color(0xFF121212)
 val OnBackground = Color(0xFFE5E7EB)
 
 val Surface = Color(0xFF1E1E1E)
 val OnSurface = Color(0xFFF3F4F6)
-
-// Permainan Elevation (Kontainer yang bertumpuk)
 val SurfaceContainerLowest = Color(0xFF0F0F0F)
 val SurfaceContainerLow = Color(0xFF1A1A1A)
 val SurfaceContainer = Color(0xFF212121)
@@ -29,7 +26,7 @@ val SurfaceContainerHighest = Color(0xFF363636)
 // ✏️ OUTLINE (Dibuat lebih subtle)
 val Outline = Color(0xFF4B5563)
 val OutlineVariant = Color(0xFF374151)
-
+// ✏️ OUTLINE (Dibuat lebih subtle)
 // 🧠 TERTIARY (Neutral dark buat balance)
 val Tertiary = Color(0xFF374151)
 val OnTertiary = Color(0xFFFFFFFF)
