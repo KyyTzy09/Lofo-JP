@@ -50,9 +50,9 @@ data class NavItem(
 fun BottomNavBar(navController: NavHostController) {
     val items = listOf(
         NavItem("home", Icons.Default.Home, "Home"),
-        NavItem("items", Icons.Default.AllInbox, "Items"),
+        NavItem("item_user", Icons.Default.AllInbox, "Items"),
         NavItem("scan", Icons.Default.QrCodeScanner, "Scan"),
-        NavItem("item_create", Icons.Default.Add, "Add"),
+        NavItem("announcement_create", Icons.Default.Add, "Add"),
         NavItem("profile", Icons.Default.Person, "Profile"),
     )
 

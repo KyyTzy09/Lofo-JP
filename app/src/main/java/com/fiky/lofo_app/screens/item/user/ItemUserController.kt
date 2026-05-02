@@ -31,9 +31,8 @@ class UserItemViewModel : ViewModel() {
         viewModelScope.launch {
             state = state.copy(isLoading = true, error = null)
             try {
-                // Asumsi repository memiliki fungsi untuk mengambil item milik user
-                val response = user()
-                state = state.copy(items = response)
+                val response = userRepo.getUserItems()
+                state = state.copy(items = response.data)
             } catch (e: retrofit2.HttpException) {
                 val errorBody = e.response()?.errorBody()?.string()
                 val errorMessage = try {
@@ -47,5 +46,4 @@ class UserItemViewModel : ViewModel() {
             }
         }
     }
-}ivate set
 }

@@ -18,6 +18,7 @@ import com.fiky.lofo_app.screens.home.HomeScreen
 import com.fiky.lofo_app.screens.home.HomeViewModel
 import com.fiky.lofo_app.screens.item.create.CreateItemScreen
 import com.fiky.lofo_app.screens.item.detail.ItemDetailScreen
+import com.fiky.lofo_app.screens.item.user.UserItemScreen
 import com.fiky.lofo_app.screens.onboarding.OnboardingScreen
 import com.fiky.lofo_app.screens.scan.ScanScreen
 
@@ -84,6 +85,18 @@ fun AppNavigation(
         }
 
         // --- ITEM FEATURE ---
+        composable("item_user") {
+            MainLayout(navController) {
+                UserItemScreen(
+                    viewModel = viewModel(),
+                    onNavigateToDetail = { itemId ->
+                        navController.navigate("item_detail/$itemId")
+                    },
+                    onAddItem = { navController.navigate("item_create") }
+                )
+            }
+        }
+
         composable("item_create") {
             CreateItemScreen(
                 onBack = { navController.popBackStack() },
