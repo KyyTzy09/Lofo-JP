@@ -1,5 +1,9 @@
 package com.fiky.lofo_app
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -26,15 +30,42 @@ import com.fiky.lofo_app.screens.scan.ScanScreen
 fun AppNavigation(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
-    authenticated: Boolean
+    authenticated: Boolean,
 ) {
     val navController = rememberNavController()
     val startDest = if (authenticated) "home" else "onboarding"
 
+    MainLayout(
+        navController
+    ) {
     NavHost(
         navController = navController,
         startDestination = startDest,
-        modifier = modifier
+        modifier = modifier,
+        enterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(400) // durasi 400ms
+            ) + fadeIn(animationSpec = tween(400))
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(400)
+            ) + fadeOut(animationSpec = tween(400))
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(400)
+            ) + fadeIn(animationSpec = tween(400))
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(400)
+            ) + fadeOut(animationSpec = tween(400))
+        }
     ) {
         // --- ONBOARDING & AUTH ---
         composable("onboarding") {
@@ -68,25 +99,19 @@ fun AppNavigation(
         // --- MAIN APP CONTENT ---
         composable("home") {
             val viewModel: HomeViewModel = viewModel()
-            MainLayout(navController) {
-                HomeScreen(navController, viewModel)
-            }
+            HomeScreen(navController, viewModel)
         }
 
         composable("scan") {
-            MainLayout(navController) {
-                ScanScreen(
-                    onNavigateToDetail = { itemId ->
-                        navController.navigate("item_detail/$itemId")
-                    },
-                    onBack = { navController.popBackStack() }
-                )
-            }
+            ScanScreen(
+                onNavigateToDetail = { itemId ->
+                    navController.navigate("item_detail/$itemId") },
+                onBack = { navController.popBackStack() }
+            )
         }
 
         // --- ITEM FEATURE ---
         composable("item_user") {
-            MainLayout(navController) {
                 UserItemScreen(
                     viewModel = viewModel(),
                     onNavigateToDetail = { itemId ->
@@ -94,7 +119,6 @@ fun AppNavigation(
                     },
                     onAddItem = { navController.navigate("item_create") }
                 )
-            }
         }
 
         composable("item_create") {
@@ -138,5 +162,5 @@ fun AppNavigation(
                 viewModel = viewModel()
             )
         }
-    }
+    }}
 }

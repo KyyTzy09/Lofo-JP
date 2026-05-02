@@ -26,7 +26,6 @@ class AuthViewModel : ViewModel() {
     private fun observeSession() {
         viewModelScope.launch {
             try {
-                // Pastikan UserRepository menangani pengambilan token dari AuthPreferences
                 val response = userRepo.getUserProfile()
 
                 if (response.user != null) {

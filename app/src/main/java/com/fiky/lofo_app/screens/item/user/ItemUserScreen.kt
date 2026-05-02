@@ -36,60 +36,111 @@ fun UserItemScreen(
     }
 
     Scaffold(
-        containerColor = Color(0xFFF8F9FB),
+        containerColor = MaterialTheme.colorScheme.background, // Pakai background gelap
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddItem,
                 containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White,
-                shape = CircleShape,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                shape = RoundedCornerShape(16.dp), // Lebih modern dari Circle
                 modifier = Modifier.padding(bottom = 80.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Item", Modifier.size(32.dp))
+                Icon(Icons.Default.Add, contentDescription = "Add Item")
             }
-        }
+        },
     ) { paddingValues ->
         LazyVerticalGrid(
-            columns = GridCells.Fixed(1), // Default list, bisa diubah ke 2 untuk tablet
+            columns = GridCells.Fixed(1), // Ubah ke 2 kolom biar padet!
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentPadding = PaddingValues(24.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            contentPadding = PaddingValues(
+                start = 16.dp,
+                top = 16.dp,
+                end = 16.dp,
+                bottom = 80.dp
+            ),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Header Section (Hero)
+            // --- HEADER SECTION ---
+            // Di dalam UserItemScreen (Header Section)
             item(span = { GridItemSpan(maxLineSpan) }) {
-                Column {
+                Column(modifier = Modifier.padding(bottom = 8.dp)) {
                     Text(
                         text = "Barang Saya",
-                        fontSize = 28.sp,
+                        fontSize = 32.sp, // Ukuran lebih besar agar dominan
                         fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF14002F)
+                        color = MaterialTheme.colorScheme.onBackground // Pastikan kontras dengan background gelap
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Surface(
-                        color = Color(0xFFECDCFF), // secondary-fixed
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = "${state.items.size} Barang",
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF6D4EA2)
-                        )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Stats Section (Ganti warna biar nggak kusam)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Surface(
+                            color = MaterialTheme.colorScheme.primaryContainer, // Ungu terang (Dark Mode)
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "Total: ${state.items.size}",
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+
+                        // Tambahkan indicator barang hilang (biar kelihatan penting)
+                        val lostCount = state.items.count { it.status == ItemStatus.HILANG }
+                        if (lostCount > 0) {
+                            Surface(
+                                color = MaterialTheme.colorScheme.errorContainer,
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text(
+                                    text = "$lostCount Hilang",
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            }
+                        }
                     }
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(28.dp))
                 }
             }
 
-            // List Items
+            // --- EMPTY STATE ---
+            if (state.items.isEmpty()) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Box(modifier = Modifier.fillMaxSize().padding(top = 100.dp), contentAlignment = Alignment.Center) {
+                        Text("Belum ada barang yang diupload", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            }
+
+            // --- LIST ITEMS ---
             items(state.items) { item ->
                 UserItemCard(
                     item = item,
                     onClick = { onNavigateToDetail(item.itemId) }
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun StatChip(label: String, count: String, selected: Boolean) {
+    Surface(
+        color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh,
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(text = label, color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface, fontSize = 12.sp)
+            Spacer(Modifier.width(8.dp))
+            Text(text = count, fontWeight = FontWeight.Bold, color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary, fontSize = 12.sp)
         }
     }
 }
