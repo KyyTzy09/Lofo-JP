@@ -25,6 +25,7 @@ class GlobalProfileViewModel : ViewModel() {
             val user = response.user
             _userState.update {
                 it.copy(
+                    userId = user.userId,
                     username = user.profile?.username ?: "",
                     phoneNumber = user.phoneNumber,
                     profilePicture = user.profile?.avatar ?: "https://i.pinimg.com/736x/8b/16/7a/8b167af653c2399dd93b952a48740620.jpg",

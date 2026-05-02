@@ -179,7 +179,8 @@ fun AppNavigation(
             AnnouncementDetailScreen(
                 announcementId,
                 onBack = { navController.popBackStack() },
-                viewModel = viewModel()
+                viewModel = viewModel(),
+                globalProfileViewModel
             )
         }
     }}

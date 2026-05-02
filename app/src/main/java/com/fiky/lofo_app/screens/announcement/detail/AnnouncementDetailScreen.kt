@@ -6,11 +6,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChatBubble
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,16 +25,21 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.fiky.lofo_app.MyApp
 import com.fiky.lofo_app.screens.home.StatusBadge
+import com.fiky.lofo_app.screens.profile.global.GlobalProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnnouncementDetailScreen(
     announcementId: String,
+    onBack: () -> Unit,
     viewModel: AnnouncementDetailViewModel,
-    onBack: () -> Unit
-) {
+    profileViewModel: GlobalProfileViewModel
+    ) {
     val state = viewModel.state
+    val userState by profileViewModel.userState.collectAsState()
+
     val scrollState = rememberScrollState()
+    val isOwner = userState.userId === state.announcement?.user?.userId
 
     LaunchedEffect(announcementId) {
         viewModel.getDetail(announcementId)
@@ -55,7 +63,6 @@ fun AnnouncementDetailScreen(
             )
         },
         bottomBar = {
-            // Action Button dengan efek Glassmorphism/Surface
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.background.copy(alpha = 0.9f),
@@ -63,10 +70,14 @@ fun AnnouncementDetailScreen(
             ) {
                 Button(
                     onClick = {
-                        viewModel.contactOwner(
-                            context = MyApp.instance,
-                            phoneNumber = state.announcement?.user?.phoneNumber ?: ""
-                        )
+                        if (isOwner) {
+//                            viewModel.updateStatus(announcementId, AnnouncementStatus.CLOSED)
+                        } else {
+                            viewModel.contactOwner(
+                                context = MyApp.instance,
+                                phoneNumber = state.announcement?.user?.phoneNumber ?: ""
+                            )
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -78,9 +89,15 @@ fun AnnouncementDetailScreen(
                         contentColor = Color.White
                     )
                 ) {
-                    Icon(Icons.Default.ChatBubble, null)
-                    Spacer(Modifier.width(8.dp))
-                    Text("Hubungi Pemilik", fontWeight = FontWeight.ExtraBold, letterSpacing = 1.sp)
+                    if (isOwner) {
+                        Icon(Icons.Default.CheckCircle, null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Tandai Selesai", fontWeight = FontWeight.ExtraBold, letterSpacing = 1.sp)
+                    } else {
+                        Icon(Icons.Default.ChatBubble, null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Hubungi Pemilik", fontWeight = FontWeight.ExtraBold, letterSpacing = 1.sp)
+                    }
                 }
             }
         }
@@ -100,7 +117,6 @@ fun AnnouncementDetailScreen(
                     .padding(horizontal = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                // --- BENTO SECTION 1: IMAGE (Conditional) ---
                 if (data.item != null) {
                     Box(
                         modifier = Modifier
@@ -135,7 +151,7 @@ fun AnnouncementDetailScreen(
                 ) {
                     Column(Modifier.padding(24.dp)) {
                         Text(
-                            text = "OFFICIAL ANNOUNCEMENT",
+                            text = "PENGUMUMAN BARANG",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.primaryContainer,
                             letterSpacing = 2.sp,
@@ -146,7 +162,7 @@ fun AnnouncementDetailScreen(
                             text = data.title,
                             style = MaterialTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.ExtraBold,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = MaterialTheme.colorScheme.primary
                             )
                         )
 
@@ -207,7 +223,12 @@ fun AnnouncementDetailScreen(
                                     .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text("👤", fontSize = 24.sp)
+                                AsyncImage(
+                                    model = user.profile?.avatar?: "https://i.pinimg.com/736x/8b/16/7a/8b167af653c2399dd93b952a48740620.jpg",
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
                             }
 
                             Spacer(Modifier.width(16.dp))
@@ -216,7 +237,7 @@ fun AnnouncementDetailScreen(
                                 Text(
                                     text = user.profile?.username ?: "Anonymous User",
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
                                     "Pemilik Barang",
@@ -259,7 +280,7 @@ fun InfoRow(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String
             Text(
                 value,
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.outlineVariant
             )
         }
     }
