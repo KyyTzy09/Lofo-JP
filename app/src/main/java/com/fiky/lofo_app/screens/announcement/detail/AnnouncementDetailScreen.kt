@@ -14,13 +14,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.fiky.lofo_app.MyApp
+import com.fiky.lofo_app.screens.home.StatusBadge
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,41 +38,56 @@ fun AnnouncementDetailScreen(
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background, // Sesuai @Color background dark
         topBar = {
-            TopAppBar(
-                title = { Text("Details", fontSize = 16.sp, fontWeight = FontWeight.SemiBold) },
+            CenterAlignedTopAppBar(
+                title = { Text("Announcement Details", style = MaterialTheme.typography.titleMedium) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = null)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.Transparent, // Biar menyatu dengan background
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                )
             )
         },
         bottomBar = {
-            // Action Button
+            // Action Button dengan efek Glassmorphism/Surface
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shadowElevation = 8.dp,
-                color = Color.White
+                color = MaterialTheme.colorScheme.background.copy(alpha = 0.9f),
+                tonalElevation = 8.dp
             ) {
                 Button(
-                    onClick = { /* Handle Found Item */ },
+                    onClick = {
+                        viewModel.contactOwner(
+                            context = MyApp.instance,
+                            phoneNumber = state.announcement?.user?.phoneNumber ?: ""
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(24.dp)
                         .height(56.dp),
                     shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6D4EA2))
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = Color.White
+                    )
                 ) {
-                    Text("I FOUND THIS ITEM", fontWeight = FontWeight.Bold)
+                    Icon(Icons.Default.ChatBubble, null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Hubungi Pemilik", fontWeight = FontWeight.ExtraBold, letterSpacing = 1.sp)
                 }
             }
         }
     ) { paddingValues ->
         if (state.isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = Color(0xFF6D4EA2))
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primaryContainer)
             }
         } else if (state.announcement != null) {
             val data = state.announcement
@@ -81,120 +97,138 @@ fun AnnouncementDetailScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
                     .verticalScroll(scrollState)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+                    .padding(horizontal = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                // --- BENTO SECTION 1: IMAGE ---
-                // Hanya tampil jika ada itemId (mengikuti logika "koneksi gambar")
-                // Jika API kamu punya field image_url sendiri di Announcement, ganti ke situ.
-                if (data.itemId != null) {
+                // --- BENTO SECTION 1: IMAGE (Conditional) ---
+                if (data.item != null) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(300.dp)
+                            .height(320.dp)
                             .clip(RoundedCornerShape(32.dp))
-                            .background(Color.LightGray)
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(32.dp))
+                            .background(MaterialTheme.colorScheme.surfaceContainer)
                     ) {
                         AsyncImage(
-                            model = "https://your-api-url.com/images/${data.itemId}.jpg", // Contoh URL
+                            model = data.item.image,
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
 
-                        // Status Badge
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Badge(containerColor = Color(0xFF14002F), contentColor = Color.White) {
-                                Text(data.status.name, modifier = Modifier.padding(4.dp))
-                            }
+                        // Status Badge Overlay
+                        Box(modifier = Modifier.padding(16.dp)) {
+                            StatusBadge(data.status)
                         }
                     }
                 }
 
-                // --- BENTO SECTION 2: FAST INFO ---
+                // --- BENTO SECTION 2: TITLE & STATS ---
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(32.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF8F9FB)),
-                    border = BorderStroke(1.dp, Color(0xFF310065).copy(alpha = 0.05f))
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                 ) {
                     Column(Modifier.padding(24.dp)) {
                         Text(
-                            text = "ANNOUNCEMENT DETAIL",
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color(0xFF6D4EA2),
-                            letterSpacing = 1.sp
+                            text = "OFFICIAL ANNOUNCEMENT",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            letterSpacing = 2.sp,
+                            fontWeight = FontWeight.Bold
                         )
-                        Spacer(Modifier.height(8.dp))
+                        Spacer(Modifier.height(12.dp))
                         Text(
                             text = data.title,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF14002F)
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        )
+
+                        Spacer(Modifier.height(24.dp))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        Spacer(Modifier.height(24.dp))
+
+                        InfoRow(
+                            icon = Icons.Default.Schedule,
+                            label = "Reported At",
+                            value = data.createdAt.take(10) // Format tanggal simple
                         )
                         Spacer(Modifier.height(16.dp))
-
-                        InfoRow(icon = Icons.Default.Schedule, label = "Lost at", value = data.createdAt)
-                        Spacer(Modifier.height(12.dp))
-                        InfoRow(icon = Icons.Default.LocationOn, label = "Location", value = data.location)
+                        InfoRow(
+                            icon = Icons.Default.LocationOn,
+                            label = "Last Seen Location",
+                            value = data.location
+                        )
                     }
                 }
 
-                // --- DESCRIPTION ---
-                Column {
+                // --- DESCRIPTION SECTION ---
+                Column(modifier = Modifier.padding(horizontal = 8.dp)) {
                     Text(
                         "DESCRIPTION",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 1.5.sp,
-                        color = Color(0xFF14002F)
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        letterSpacing = 1.5.sp
                     )
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(12.dp))
                     Text(
                         text = data.description,
-                        fontSize = 16.sp,
-                        color = Color.DarkGray,
-                        lineHeight = 24.sp
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            lineHeight = 28.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                        )
                     )
                 }
 
-                // --- OWNER PROFILE ---
+                // --- OWNER PROFILE CARD ---
                 data.user?.let { user ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(32.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF310065))
+                        shape = RoundedCornerShape(24.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                        )
                     ) {
                         Row(
-                            modifier = Modifier.padding(24.dp),
+                            modifier = Modifier.padding(20.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            // Avatar Placeholder/Image
                             Box(
                                 modifier = Modifier
-                                    .size(56.dp)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .background(Color.White.copy(alpha = 0.2f))
+                                    .size(52.dp)
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)),
+                                contentAlignment = Alignment.Center
                             ) {
-                                // Ganti dengan user.profile_picture jika ada
-                                Text("👤", Modifier.align(Alignment.Center))
+                                Text("👤", fontSize = 24.sp)
                             }
+
                             Spacer(Modifier.width(16.dp))
+
                             Column(Modifier.weight(1f)) {
-                                Text(user?.profile?.username ?: "Tidak diketahui", color = Color.White, fontWeight = FontWeight.Bold)
-                                Text("Owner Profile", color = Color.White.copy(alpha = 0.6f), fontSize = 12.sp)
-                            }
-                            IconButton(onClick = { /* Chat logic */ }) {
-                                Icon(Icons.Default.ChatBubble, contentDescription = "")
+                                Text(
+                                    text = user.profile?.username ?: "Anonymous User",
+                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    "Pemilik Barang",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             }
                         }
                     }
                 }
 
-                Spacer(Modifier.height(100.dp)) // Padding bawah agar tidak tertutup button
+                Spacer(Modifier.height(120.dp)) // Extra space for bottom button
             }
         }
     }
@@ -205,20 +239,28 @@ fun InfoRow(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String
     Row(verticalAlignment = Alignment.CenterVertically) {
         Surface(
             shape = RoundedCornerShape(12.dp),
-            color = Color(0xFF6D4EA2).copy(alpha = 0.1f),
-            modifier = Modifier.size(40.dp)
+            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f),
+            modifier = Modifier.size(44.dp)
         ) {
             Icon(
                 icon,
                 contentDescription = null,
-                tint = Color(0xFF6D4EA2),
-                modifier = Modifier.padding(8.dp)
+                tint = MaterialTheme.colorScheme.primaryContainer,
+                modifier = Modifier.padding(10.dp)
             )
         }
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.width(16.dp))
         Column {
-            Text(label.uppercase(), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
-            Text(value, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+            Text(
+                label.uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                value,
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }

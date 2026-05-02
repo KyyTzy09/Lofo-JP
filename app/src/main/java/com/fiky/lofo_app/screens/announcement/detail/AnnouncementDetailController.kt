@@ -1,5 +1,8 @@
 package com.fiky.lofo_app.screens.announcement.detail
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,6 +29,23 @@ class AnnouncementDetailViewModel : ViewModel() {
             } finally {
                 state = state.copy(isLoading = false)
             }
+        }
+    }
+
+    fun contactOwner(context: Context, phoneNumber: String) {
+        try {
+            // Format nomor harus diawali dengan kode negara (misal: 62 untuk Indonesia)
+            // Hilangkan karakter non-digit seperti '+' atau '-'
+            val cleanNumber = phoneNumber.replace(Regex("[^0-9]"), "")
+            val url = "https://wa.me/$cleanNumber?text=${Uri.encode("Halo, saya ingin bertanya mengenai barang anda yang hilang.")}"
+
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse(url)
+            }
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            // Handle error jika terjadi kesalahan saat memulai intent
+            e.printStackTrace()
         }
     }
 }
