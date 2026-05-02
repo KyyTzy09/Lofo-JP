@@ -12,30 +12,21 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class AuthViewModel : ViewModel() {
-    private val dataStore = MyApp.instance.dataStore
-    private val authPreferences = AuthPreferences(dataStore)
     private val _authState = MutableStateFlow<AuthState>(AuthState.Loading)
     val authState: StateFlow<AuthState> = _authState
 
     private val userRepo: UserRepository = UserRepository()
-
     init {
         observeSession()
     }
-
     private fun observeSession() {
         viewModelScope.launch {
-            try {
-                val response = userRepo.getUserProfile()
-
-                if (response.user != null) {
-                    _authState.value = AuthState.Authenticated
-                } else {
-                    _authState.value = AuthState.Unauthenticated
-                }
-            } catch (e: Exception) {
-                _authState.value = AuthState.Unauthenticated
-                authPreferences.clearToken()
+            val response = userRepo.getUserProfile()
+            val session = response.user
+            _authState.value = if (session !== null) {
+                AuthState.Authenticated
+            } else {
+                AuthState.Unauthenticated
             }
         }
     }
