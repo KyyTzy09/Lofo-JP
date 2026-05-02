@@ -25,6 +25,7 @@ import com.fiky.lofo_app.screens.item.detail.ItemDetailScreen
 import com.fiky.lofo_app.screens.item.user.UserItemScreen
 import com.fiky.lofo_app.screens.onboarding.OnboardingScreen
 import com.fiky.lofo_app.screens.profile.ProfileScreen
+import com.fiky.lofo_app.screens.profile.global.GlobalProfileViewModel
 import com.fiky.lofo_app.screens.scan.ScanScreen
 
 @Composable
@@ -33,6 +34,7 @@ fun AppNavigation(
     snackbarHostState: SnackbarHostState,
     authenticated: Boolean,
 ) {
+    val globalProfileViewModel: GlobalProfileViewModel = viewModel()
     val navController = rememberNavController()
     val startDest = if (authenticated) "home" else "onboarding"
 
@@ -107,7 +109,9 @@ fun AppNavigation(
                 onNavigateToAnnouncementCreate = {
                     navController.navigate("announcement_create")
                 },
+                globalProfileViewModel,
                 viewModel
+
             )
         }
 

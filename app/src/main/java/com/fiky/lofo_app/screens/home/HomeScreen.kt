@@ -1,51 +1,46 @@
 package com.fiky.lofo_app.screens.home
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
-import com.fiky.lofo_app.data.models.AnnouncementModel
 import com.fiky.lofo_app.data.models.AnnouncementStatus
 import com.fiky.lofo_app.screens.announcement.AnnouncementCard
+import com.fiky.lofo_app.screens.profile.global.GlobalProfileViewModel
+import androidx.compose.runtime.getValue
 
 @Composable
 fun HomeScreen(
     onNavigateAnnouncementDetail : (id: String) -> Unit,
     onNavigateToAnnouncementCreate: () -> Unit,
+    profileViewModel: GlobalProfileViewModel = viewModel(),
     viewModel: HomeViewModel = viewModel()
 ) {
     val state = viewModel.state
+    val userState by profileViewModel.userState.collectAsState()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        topBar = { HomeTopAppBar() }
+        topBar = { HomeTopAppBar(userState) }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentPadding = PaddingValues(bottom = 100.dp) // Ruang untuk BottomBar
+            contentPadding = PaddingValues(bottom = 100.dp)
         ) {
             // 1. Search Bar
             item {
@@ -100,14 +95,16 @@ fun SearchBar(query: String, onQueryChange: (String) -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
             .clip(RoundedCornerShape(16.dp)),
-        placeholder = { Text("Search for lost items...", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+        placeholder = { Text("Search for lost items...", color = MaterialTheme.colorScheme.primary) },
         leadingIcon = { Icon(Icons.Default.Search, null) },
         colors = TextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
             disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
             focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedTextColor = MaterialTheme.colorScheme.primary,
+            unfocusedTextColor = MaterialTheme.colorScheme.primary
         )
     )
 }

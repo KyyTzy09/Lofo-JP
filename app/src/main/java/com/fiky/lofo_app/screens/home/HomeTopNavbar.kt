@@ -25,10 +25,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.fiky.lofo_app.screens.profile.global.UserState
 
 
 @Composable
-fun HomeTopAppBar() {
+fun HomeTopAppBar(
+    user: UserState
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -43,9 +46,9 @@ fun HomeTopAppBar() {
                     .clip(CircleShape)
                     .border(2.dp, MaterialTheme.colorScheme.primaryContainer, CircleShape)
             ) {
-                // Ganti dengan URL foto user asli
+
                 AsyncImage(
-                    model = "https://via.placeholder.com/150",
+                    model = user.profilePicture ?: "https://via.placeholder.com/150",
                     contentDescription = "Profile",
                     contentScale = ContentScale.Crop
                 )
@@ -53,18 +56,15 @@ fun HomeTopAppBar() {
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(
-                    "Hello, User",
+                    "Hello, ${user.username}",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
                 Text(
-                    "Welcome back",
+                    "Selamat datang kembali!",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-        }
-        IconButton(onClick = { /* Search Action */ }) {
-            Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground)
         }
     }
 }

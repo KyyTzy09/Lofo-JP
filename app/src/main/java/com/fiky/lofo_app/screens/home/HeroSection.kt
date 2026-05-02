@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,7 +37,7 @@ fun HeroSection(
         modifier = Modifier
             .fillMaxWidth()
             .padding(24.dp)
-            .height(200.dp)
+            .height(230.dp)
             .clip(RoundedCornerShape(32.dp))
             .background(
                 Brush.linearGradient(
@@ -76,6 +77,8 @@ fun HeroSection(
                     color = Color.White.copy(alpha = 0.8f)
                 )
             }
+
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Info Card kecil di dalam Hero untuk status laporan user
             Row(

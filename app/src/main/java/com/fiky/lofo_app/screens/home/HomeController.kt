@@ -8,11 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.fiky.lofo_app.data.api.repositories.AnnouncementRepository
 import com.fiky.lofo_app.data.models.AnnouncementModel
 import com.fiky.lofo_app.data.models.AnnouncementStatus
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
-    // Referensi repository (sesuaikan dengan DI atau Repo Anda)
-     private val announcementRepo = AnnouncementRepository()
+    private val announcementRepo = AnnouncementRepository()
 
     var state by mutableStateOf(HomeState())
         private set
@@ -21,8 +21,11 @@ class HomeViewModel : ViewModel() {
         fetchAnnouncements()
     }
 
-    fun onSearchQueryChange(query: String) {
+     fun onSearchQueryChange(query: String) {
         state = state.copy(searchQuery = query)
+         if (!query.isEmpty()) {
+             searchAnnouncements(query)
+         }
     }
 
     fun fetchAnnouncements() {
@@ -32,6 +35,7 @@ class HomeViewModel : ViewModel() {
                  val all = announcementRepo.GetAllAnnouncements()
 
                 state = state.copy(
+                    announcements = all.data,
                     pendingAnnouncements = all.data.filter { it.status == AnnouncementStatus.PENDING },
                     closedAnnouncements = all.data.filter { it.status == AnnouncementStatus.CLOSED },
                     isLoading = false
@@ -45,7 +49,7 @@ class HomeViewModel : ViewModel() {
     fun searchAnnouncements(query: String) {
         viewModelScope.launch {
             try {
-                val filtered = state.pendingAnnouncements.filter {
+                val filtered = state.announcements.filter {
                     it.title.contains(query, ignoreCase = true) ||
                             it.description.contains(query, ignoreCase = true)
                 }
