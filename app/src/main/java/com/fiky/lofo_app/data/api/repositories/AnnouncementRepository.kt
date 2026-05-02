@@ -1,6 +1,7 @@
 package com.fiky.lofo_app.data.api.repositories
 
 import com.fiky.lofo_app.data.api.dto.announcement.AnnouncementDetail
+import com.fiky.lofo_app.data.api.dto.announcement.BulkAnnouncementDto
 import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementRequest
 import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementResponse
 import com.fiky.lofo_app.data.api.dto.announcement.PendingAnnouncements
@@ -9,6 +10,10 @@ import com.fiky.lofo_app.data.api.dto.announcement.UpdateAnnouncementResponse
 import com.fiky.lofo_app.data.api.services.ApiService
 
 class AnnouncementRepository {
+    suspend fun GetAllAnnouncements() : BulkAnnouncementDto {
+        return ApiService.announcementService.getAllAnnouncements()
+    }
+
     suspend fun GetAllPendingAnnouncements(): PendingAnnouncements {
         return ApiService.announcementService.getPendingAnnouncements()
     }

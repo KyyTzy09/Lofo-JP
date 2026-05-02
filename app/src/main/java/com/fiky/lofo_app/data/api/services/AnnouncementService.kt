@@ -1,6 +1,7 @@
 package com.fiky.lofo_app.data.api.services
 
 import com.fiky.lofo_app.data.api.dto.announcement.AnnouncementDetail
+import com.fiky.lofo_app.data.api.dto.announcement.BulkAnnouncementDto
 import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementRequest
 import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementResponse
 import com.fiky.lofo_app.data.api.dto.announcement.PendingAnnouncements
@@ -18,6 +19,9 @@ interface AnnouncementService {
     suspend fun createAnnouncement(
         @Body announcementDto: CreateAnnouncementRequest
     ): CreateAnnouncementResponse
+
+    @GET("announcements")
+    suspend fun getAllAnnouncements(): BulkAnnouncementDto
 
     @GET("announcements/pending")
     suspend fun getPendingAnnouncements(): PendingAnnouncements

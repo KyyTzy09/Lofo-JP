@@ -9,6 +9,8 @@ data class CreateAnnouncementRequest(
     val location : String,
     @SerializedName("lost_at")
     val lostAt: String,
+    @SerializedName("item_id")
+    val itemId: String? = null
 )
 
 data class CreateAnnouncementResponse (

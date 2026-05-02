@@ -100,7 +100,15 @@ fun AppNavigation(
         // --- MAIN APP CONTENT ---
         composable("home") {
             val viewModel: HomeViewModel = viewModel()
-            HomeScreen(navController, viewModel)
+            HomeScreen(
+                onNavigateAnnouncementDetail = {
+                    navController.navigate("announcement_detail/$it")
+                },
+                onNavigateToAnnouncementCreate = {
+                    navController.navigate("announcement_create")
+                },
+                viewModel
+            )
         }
 
         composable("profile") {
