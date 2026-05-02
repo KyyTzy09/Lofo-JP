@@ -19,6 +19,8 @@ import com.fiky.lofo_app.screens.home.HomeViewModel
 import com.fiky.lofo_app.screens.item.create.CreateItemScreen
 import com.fiky.lofo_app.screens.item.detail.ItemDetailScreen
 import com.fiky.lofo_app.screens.onboarding.OnboardingScreen
+import com.fiky.lofo_app.screens.profile.ProfileScreen
+import com.fiky.lofo_app.screens.profile.ProfileViewModel
 import com.fiky.lofo_app.screens.scan.ScanScreen
 
 @Composable
@@ -69,6 +71,13 @@ fun AppNavigation(
             val viewModel: HomeViewModel = viewModel()
             MainLayout(navController) {
                 HomeScreen(navController, viewModel)
+            }
+        }
+
+        composable("profile") {
+            val viewModel: ProfileViewModel = viewModel()
+            MainLayout(navController) {
+                ProfileScreen(navController, viewModel)
             }
         }
 
