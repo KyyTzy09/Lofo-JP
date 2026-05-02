@@ -36,11 +36,11 @@ fun UserItemScreen(
     }
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = Color(0xFFF8F9FB),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddItem,
-                containerColor = Color(0xFF14002F),
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = Color.White,
                 shape = CircleShape,
                 modifier = Modifier.padding(bottom = 80.dp)

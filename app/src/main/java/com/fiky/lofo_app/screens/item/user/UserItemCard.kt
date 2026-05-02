@@ -22,6 +22,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,7 +42,6 @@ import com.fiky.lofo_app.data.models.ItemStatus
 @Composable
 fun UserItemCard(item: ItemModel, onClick: () -> Unit) {
     val isLost = item.status == ItemStatus.HILANG
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -83,7 +83,7 @@ fun UserItemCard(item: ItemModel, onClick: () -> Unit) {
                                 .background(if (isLost) Color(0xFFBA1A1A) else Color(0xFF4CAF50))
                         )
                         Text(
-                            text = if (isLost) "SEDANG DIUMUMKAN" else "SAFE",
+                            text = if (isLost) "SEDANG DIUMUMKAN" else "TERSEDIA",
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Black,
                             color = if (isLost) Color(0xFF93000A) else Color(0xFF14002F)
@@ -104,7 +104,7 @@ fun UserItemCard(item: ItemModel, onClick: () -> Unit) {
                         text = item.itemName,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF14002F)
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = item.itemInfo,
@@ -132,11 +132,11 @@ fun UserItemCard(item: ItemModel, onClick: () -> Unit) {
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isLost) Color(0xFFBA1A1A) else Color(0xFF14002F)
+                        containerColor = if (isLost) Color(0xFFBA1A1A) else MaterialTheme.colorScheme.primary
                     )
                 ) {
                     Text(
-                        text = if (isLost) "TRACK ITEM" else "VIEW DETAILS",
+                        text = if (isLost) "LACAK BARANG" else "LIHAT DETAIL",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -151,7 +151,7 @@ fun UserItemCard(item: ItemModel, onClick: () -> Unit) {
                         Icon(
                             Icons.Default.LocationOn,
                             contentDescription = null,
-                            tint = Color(0xFF14002F),
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
