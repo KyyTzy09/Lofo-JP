@@ -1,5 +1,8 @@
 package com.fiky.lofo_app.screens.item.detail
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -17,11 +20,10 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.QrCode2
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,15 +31,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import coil.compose.AsyncImage
 import com.fiky.lofo_app.MyApp
 import com.fiky.lofo_app.composables.OpenStreetMap
 import com.fiky.lofo_app.utils.ImageDownloader
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,6 +55,28 @@ fun ItemDetailScreen(
     val state = viewModel.state
     val scrollState = rememberScrollState()
     val downloader = remember { ImageDownloader(MyApp.instance) }
+
+    val context = LocalContext.current
+    var hasLocationPermission by remember {
+        mutableStateOf(false) // State untuk cek apakah izin sudah diberikan
+    }
+
+    // Launcher untuk meminta izin
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        hasLocationPermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+    }
+
+    LaunchedEffect(Unit) {
+        launcher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+    }
 
     LaunchedEffect(itemId) {
         viewModel.getItemDetail(itemId)
@@ -295,7 +323,6 @@ fun ItemDetailScreen(
                         }
 
                         // Last Seen Map Card
-                        // ... di dalam Column detail ...
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(32.dp),
@@ -304,25 +331,32 @@ fun ItemDetailScreen(
                             shadowElevation = 2.dp
                         ) {
                             Column {
-                                // Judul Tetap Aman di Atas
-                                Text(
-                                    text = "Terakhir Dilihat",
+                                Row(
                                     modifier = Modifier
                                         .padding(horizontal = 24.dp)
-                                        .padding(top = 24.dp, bottom = 16.dp), // Beri jarak bawah agar tidak nempel map
-                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.primary
-                                )
+                                        .padding(top = 24.dp, bottom = 16.dp),
+                                    horizontalArrangement = Arrangement.Start,
+                                ) {
+                                    Icon(
+                                        Icons.Default.LocationOn,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "Terakhir Dilihat",
+                                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                                val latitude = item.location?.latitude
+                                val longitude = item.location?.longitude
 
-                                val latitude = -7.435273
-                                val longitude = 109.248963
-
-                                if (latitude != null && longitude != null) {
-                                    // Bungkus Map dengan Box yang di-Clip
+                                if (hasLocationPermission && latitude != null && longitude != null) {
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(250.dp) // Kunci tinggi map di sini
+                                            .height(250.dp)
                                             .padding(horizontal = 16.dp) // Beri sedikit margin agar tidak mentok kiri-kanan (opsional)
                                             .padding(bottom = 16.dp)
                                             .clip(RoundedCornerShape(20.dp)) // Bikin sudut map melengkung biar estetik
@@ -335,7 +369,6 @@ fun ItemDetailScreen(
                                         )
                                     }
                                 } else {
-                                    // Placeholder
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()

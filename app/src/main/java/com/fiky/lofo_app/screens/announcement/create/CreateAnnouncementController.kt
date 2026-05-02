@@ -7,10 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementRequest
 import com.fiky.lofo_app.data.api.repositories.AnnouncementRepository
+import com.fiky.lofo_app.data.api.repositories.UserRepository
 import kotlinx.coroutines.launch
 
 class CreateAnnouncementViewModel : ViewModel() {
-     private val announcementRepo = AnnouncementRepository()
+     private val announcementRepo = AnnouncementRepository();
+    private val userRepo = UserRepository();
 
     var state by mutableStateOf(CreateAnnouncementState())
         private set
@@ -18,7 +20,7 @@ class CreateAnnouncementViewModel : ViewModel() {
     fun onTitleChange(value: String) { state = state.copy(title = value) }
     fun onDescriptionChange(value: String) { state = state.copy(description = value) }
     fun onLocationChange(value: String) { state = state.copy(lastLocation = value) }
-    fun onItemSelected(value: String?) { state = state.copy(selectedItem = value) }
+    fun onItemSelected(id: String?, name: String?) { state = state.copy(selectedItemId = id, selectedItemName = name) }
     fun onDateChange(value: String) { state = state.copy(dateLost = value) }
 
     fun createAnnouncement(onSuccess: (id:String) -> Unit, onError: (String) -> Unit) {
@@ -34,7 +36,8 @@ class CreateAnnouncementViewModel : ViewModel() {
                         title = state.title,
                         description = state.description,
                         location = state.lastLocation,
-                        lostAt = state.dateLost
+                        lostAt = state.dateLost,
+                        itemId = state.selectedItemId
                     )
                 )
                 onSuccess(created.data.announcementId)
@@ -43,6 +46,22 @@ class CreateAnnouncementViewModel : ViewModel() {
                 onError(e.message ?: "Terjadi kesalahan");
             } finally {
                 state = state.copy(isLoading = false)
+            }
+        }
+    }
+
+    fun getUserItems() {
+        viewModelScope.launch {
+            state = state.copy(isFetchingItem = true)
+            try {
+                val items = userRepo.getUserItems()
+                state = state.copy(items = items.data)
+            }
+            catch (e: Exception) {
+                state = state.copy(error = e.message ?: "Terjadi kesalahan")
+            }
+            finally {
+                state = state.copy(isFetchingItem = false)
             }
         }
     }

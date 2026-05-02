@@ -11,7 +11,7 @@ import retrofit2.http.Header
 import retrofit2.http.PATCH
 
 interface UserService {
-    @GET("users/me")
+    @GET("users/profile")
     suspend fun getUserProfile(
         @Header("Authorization") token: String
     ): UserProfileResponse

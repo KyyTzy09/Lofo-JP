@@ -42,6 +42,7 @@ android {
 dependencies {
 //    Map
     implementation("org.osmdroid:osmdroid-android:6.1.18")
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
 //    DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 

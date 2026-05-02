@@ -16,7 +16,8 @@ data class AnnouncementModel(
     val createdAt: String,
     @SerializedName("updated_at")
     val updatedAt: String,
-    val user: UserModel?
+    val user: UserModel?,
+    val item: ItemModel?
 )
 
 enum class AnnouncementStatus {

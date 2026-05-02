@@ -10,16 +10,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,16 +24,19 @@ fun CreateAnnouncementScreen(
     snackbarHostState: SnackbarHostState,
     onSuccessfulCreate: (id: String) -> Unit = {}
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.getUserItems()
+    }
+
     val state = viewModel.state
+    val items = state.items
+
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
-
     var tempDate by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
     var expandedItemSelector by remember { mutableStateOf(false) }
-    val itemsList = listOf("MacBook Pro 16\"", "Leather Wallet", "Bose Headphones", "iPhone 13")
-
 
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(
@@ -69,7 +66,18 @@ fun CreateAnnouncementScreen(
                 TextButton(onClick = { showDatePicker = false }) { Text("Batal") }
             }
         ) {
-            DatePicker(state = datePickerState)
+            DatePicker(
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.surface, // Warna latar belakang
+                    titleContentColor = MaterialTheme.colorScheme.primary, // Warna teks judul (Pilih Tanggal)
+                    headlineContentColor = MaterialTheme.colorScheme.primary, // Warna teks tanggal yang terpilih di atas
+                    selectedDayContainerColor = MaterialTheme.colorScheme.primary, // Warna buletan tanggal terpilih
+                    selectedDayContentColor = MaterialTheme.colorScheme.onPrimary, // Warna angka tanggal terpilih
+                    todayContentColor = MaterialTheme.colorScheme.primary, // Warna angka hari ini
+                    todayDateBorderColor = MaterialTheme.colorScheme.primary // Warna lingkaran hari ini
+                )
+            )
         }
     }
 
@@ -82,6 +90,7 @@ fun CreateAnnouncementScreen(
 
         AlertDialog(
             onDismissRequest = { showTimePicker = false },
+            containerColor = MaterialTheme.colorScheme.surface,
             confirmButton = {
                 TextButton(onClick = {
                     val formattedTime = String.format("%02d:%02d", timePickerState.hour, timePickerState.minute)
@@ -95,29 +104,34 @@ fun CreateAnnouncementScreen(
             text = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("Pilih Jam", modifier = Modifier.padding(bottom = 16.dp))
-                    TimePicker(state = timePickerState)
+                    TimePicker(
+                        state = timePickerState,
+                        colors = TimePickerDefaults.colors(
+                            // Lingkaran jam (pake surface yang agak terang dikit biar kontras sama background)
+                            clockDialColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            // Angka di dalam lingkaran yang tidak dipilih
+                            clockDialUnselectedContentColor = MaterialTheme.colorScheme.primary,
+                            // Angka di dalam lingkaran saat kena jarum jam
+                            clockDialSelectedContentColor = Color.White,
+                            // Warna jarum jam (pake ungu utama lo)
+                            selectorColor = MaterialTheme.colorScheme.primary,
+                            // Warna kotak jam/menit (Input)
+                            timeSelectorSelectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            // Warna angka di dalam kotak yang dipilih (Harus kontras!)
+                            timeSelectorSelectedContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            // Warna kotak jam/menit yang lagi GA dipilih
+                            timeSelectorUnselectedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                            // Warna angka di kotak yang lagi GA dipilih
+                            timeSelectorUnselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
                 }
             }
         )
     }
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background, // Gunakan Background Gelap
-        topBar = {
-            TopAppBar(
-                title = { Text("Baru", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
-                )
-            )
-        }
+        containerColor = MaterialTheme.colorScheme.background,
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -187,7 +201,7 @@ fun CreateAnnouncementScreen(
                         )
                         {
                             OutlinedTextField(
-                                value = state.selectedItem ?: "",
+                                value = state.selectedItemName ?: "",
                                 onValueChange = {},
                                 readOnly = true,
                                 placeholder = {
@@ -227,17 +241,17 @@ fun CreateAnnouncementScreen(
                                         .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp)),
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
-                                    itemsList.forEach { item ->
+                                    items?.forEach { item ->
                                         DropdownMenuItem(
                                             text = {
                                                 Text(
-                                                    text = item,
+                                                    text = item?.itemName?: "Nama Barang",
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     color = MaterialTheme.colorScheme.onPrimary
                                                 )
                                             },
                                             onClick = {
-                                                viewModel.onItemSelected(item)
+                                                viewModel.onItemSelected(item.itemId, item.itemName)
                                                 expandedItemSelector = false
                                             },
                                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
@@ -264,7 +278,7 @@ fun CreateAnnouncementScreen(
                                 Spacer(Modifier.width(12.dp))
                                 Text(
                                     text = if(state.dateLost.isEmpty()) "Pilih Tanggal & Waktu" else state.dateLost,
-                                    color = if(state.dateLost.isEmpty()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
+                                    color = if(state.dateLost.isEmpty()) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimary
                                 )
                             }
                         }
@@ -284,7 +298,23 @@ fun CreateAnnouncementScreen(
 
                     // --- SUBMIT BUTTON ---
                     Button(
-                        onClick = { /* ViewModel Call */ },
+                        onClick = {
+                            viewModel.createAnnouncement(
+                                onSuccess = {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("Berhasil membuat pengumuman")
+                                        onBack()
+                                        onSuccessfulCreate(it)
+                                    }
+                                    onSuccessfulCreate(it)
+                                },
+                                onError = {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(it)
+                                    }
+                                }
+                            )
+                        },
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)

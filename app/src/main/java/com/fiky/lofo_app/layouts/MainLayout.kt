@@ -24,7 +24,10 @@ fun MainLayout(
     val showBottomBar = currentRoute !in listOf(
         "login",
         "register",
-        "onboarding"
+        "onboarding",
+        "item_create",
+        "item_detail/{itemId}",
+        "announcement_detail/{announcementId}",
     )
 
     Scaffold(

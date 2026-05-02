@@ -8,6 +8,7 @@ data class ProfileModel(
     val userId  : String,
     val username: String,
     val info    : String?,
+    val avatar: String?,
     val address:  String?,
     val user : UserModel?
 )
