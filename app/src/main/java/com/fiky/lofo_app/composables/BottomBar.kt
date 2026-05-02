@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
@@ -50,9 +52,9 @@ data class NavItem(
 fun BottomNavBar(navController: NavHostController) {
     val items = listOf(
         NavItem("home", Icons.Default.Home, "Home"),
-        NavItem("items", Icons.Default.AllInbox, "Items"),
+        NavItem("item_user", Icons.Default.AllInbox, "Items"),
         NavItem("scan", Icons.Default.QrCodeScanner, "Scan"),
-        NavItem("item_create", Icons.Default.Add, "Add"),
+        NavItem("announcement_create", Icons.Default.Add, "Add"),
         NavItem("profile", Icons.Default.Person, "Profile"),
     )
 
@@ -63,15 +65,15 @@ fun BottomNavBar(navController: NavHostController) {
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
                 clip = true
             }
-            .shadow(elevation = 15.dp),
-        color = Color(0xFF1A1A1A)
+            .shadow(elevation = 15.dp)
+            .navigationBarsPadding(),
+            color = Color(0xFF1A1A1A)
     ) {
         NavigationBar(
             containerColor = Color.Transparent,
             modifier = Modifier
-                .height(85.dp)
                 .padding(horizontal = 5.dp),
-            windowInsets = WindowInsets(0.dp)
+            windowInsets = WindowInsets(0.dp),
         ) {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
@@ -103,8 +105,7 @@ fun BottomNavBar(navController: NavHostController) {
                                         shape = CircleShape
                                     )
                                     .scale(scale)
-                                    .shadow(elevation = 8.dp, shape = CircleShape)
-                            ) {
+                                    .shadow(elevation = 8.dp, shape = CircleShape)) {
                                 Icon(
                                     imageVector = item.icon,
                                     contentDescription = item.label,
