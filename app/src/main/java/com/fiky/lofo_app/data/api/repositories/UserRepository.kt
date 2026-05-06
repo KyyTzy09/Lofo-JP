@@ -15,8 +15,7 @@ class UserRepository {
     private val authPreferences: AuthPreferences = AuthPreferences(dataStore)
 
     suspend fun getUserProfile(): UserProfileResponse {
-        val token = authPreferences.getToken()
-        return ApiService.userService.getUserProfile("Bearer $token")
+        return ApiService.userService.getUserProfile();
     }
 
     suspend fun getUserItems() : BulkItemResponse {
