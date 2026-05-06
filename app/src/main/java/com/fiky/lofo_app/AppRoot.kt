@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.fiky.lofo_app.composables.LoadingScreen
 import com.fiky.lofo_app.screens.auth.AuthState
 import com.fiky.lofo_app.screens.auth.AuthViewModel
 
@@ -21,9 +22,7 @@ fun AppRoot(
     val state by viewModel.authState.collectAsState()
     when (state) {
         is AuthState.Loading -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+                LoadingScreen()
         }
 
         is AuthState.Authenticated -> {

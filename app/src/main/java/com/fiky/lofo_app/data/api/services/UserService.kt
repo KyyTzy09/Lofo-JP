@@ -13,17 +13,19 @@ import retrofit2.http.PATCH
 interface UserService {
     @GET("users/profile")
     suspend fun getUserProfile(
-        @Header("Authorization") token: String
+         @Header("Accept") accept: String = "application/json"
     ): UserProfileResponse
 
     @GET("users/items")
     suspend fun getUserItems(
-        @Header("Authorization") token: String
+        @Header("Authorization") token: String,
+        @Header("Accept") accept: String = "application/json"
     ): BulkItemResponse
 
     @GET("users/announcements")
     suspend fun getUserAnnouncements(
-        @Header("Authorization") token: String
+        @Header("Authorization") token: String,
+        @Header("Accept") accept: String = "application/json"
     ):  BulkAnnouncementDto
 
     @PATCH("users/profile")

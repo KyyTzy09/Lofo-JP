@@ -20,6 +20,7 @@ class GlobalProfileViewModel : ViewModel() {
 
     fun loadUserProfile() {
         viewModelScope.launch {
+            try {
             _userState.update { it.copy(isLoading = true) }
              val response = userRepo.getUserProfile()
             val user = response.user
@@ -31,6 +32,9 @@ class GlobalProfileViewModel : ViewModel() {
                     profilePicture = user.profile?.avatar ?: "https://i.pinimg.com/736x/8b/16/7a/8b167af653c2399dd93b952a48740620.jpg",
                     isLoading = false
                 )
+            }
+            } catch (e: Exception) {
+                _userState.update { it.copy(isLoading = false) }
             }
         }
     }
