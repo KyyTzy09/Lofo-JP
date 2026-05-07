@@ -5,12 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fiky.lofo_app.data.api.repositories.AuthRepository
 import com.fiky.lofo_app.data.api.repositories.UserRepository
 import kotlinx.coroutines.launch
 
 
 class ProfileViewModel : ViewModel() {
     private val userRepo = UserRepository()
+    private val authrepo = AuthRepository()
 
     var state by mutableStateOf(ProfileState())
         private set
@@ -35,8 +37,13 @@ class ProfileViewModel : ViewModel() {
 
     fun logout(onSuccess: () -> Unit) {
         viewModelScope.launch {
-            // Logika clear session/token
-            onSuccess()
+            try {
+                authrepo.logout()
+                onSuccess()
+            }
+            catch (e: Exception) {
+                state = state.copy(error = e.message ?: "Gagal logout")
+            }
         }
     }
 }
