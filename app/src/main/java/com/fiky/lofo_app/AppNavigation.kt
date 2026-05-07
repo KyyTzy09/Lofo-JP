@@ -24,8 +24,9 @@ import com.fiky.lofo_app.screens.item.create.CreateItemScreen
 import com.fiky.lofo_app.screens.item.detail.ItemDetailScreen
 import com.fiky.lofo_app.screens.item.user.UserItemScreen
 import com.fiky.lofo_app.screens.onboarding.OnboardingScreen
-import com.fiky.lofo_app.screens.profile.ProfileScreen
+import com.fiky.lofo_app.screens.profile.detail.ProfileScreen
 import com.fiky.lofo_app.screens.profile.global.GlobalProfileViewModel
+import com.fiky.lofo_app.screens.profile.update.UpdateProfileScreen
 import com.fiky.lofo_app.screens.scan.ScanScreen
 
 @Composable
@@ -115,10 +116,20 @@ fun AppNavigation(
             )
         }
 
+        // Profile
         composable("profile") {
             ProfileScreen(
                 navController,
+                globalProfileViewModel= globalProfileViewModel,
                 viewModel = viewModel()
+            )
+        }
+
+        composable("profile_update") {
+            UpdateProfileScreen(
+                onBack = { navController.popBackStack() },
+                snackbarHostState,
+                globalProfileViewModel
             )
         }
 
