@@ -1,4 +1,4 @@
-package com.fiky.lofo_app.screens.profile
+package com.fiky.lofo_app.screens.profile.detail
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -15,8 +15,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.fiky.lofo_app.screens.profile.global.GlobalProfileViewModel
 import com.fiky.lofo_app.utils.TextUtils
@@ -24,9 +27,9 @@ import com.fiky.lofo_app.utils.TextUtils
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    navController: androidx.navigation.NavController,
+    navController: NavController,
     globalProfileViewModel: GlobalProfileViewModel,
-    viewModel: ProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: ProfileViewModel = viewModel()
 ) {
     val state = viewModel.state
     val user = state.user
@@ -90,7 +93,7 @@ fun ProfileScreen(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 40.dp),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -98,7 +101,7 @@ fun ProfileScreen(
             // Action Buttons
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Button(
-                    onClick = { /* Edit */ },
+                    onClick = { navController.navigate("profile_update") },
                     modifier = Modifier.weight(1f).height(52.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer)

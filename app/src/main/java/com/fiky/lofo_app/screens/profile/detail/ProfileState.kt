@@ -1,4 +1,4 @@
-package com.fiky.lofo_app.screens.profile
+package com.fiky.lofo_app.screens.profile.detail
 
 import com.fiky.lofo_app.data.models.UserModel
 

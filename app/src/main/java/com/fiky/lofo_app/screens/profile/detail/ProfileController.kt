@@ -1,18 +1,12 @@
-package com.fiky.lofo_app.screens.profile
+package com.fiky.lofo_app.screens.profile.detail
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.fiky.lofo_app.data.api.repositories.AuthRepository
 import com.fiky.lofo_app.data.api.repositories.UserRepository
-import com.fiky.lofo_app.data.models.UserModel
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 
 class ProfileViewModel : ViewModel() {

@@ -30,6 +30,8 @@ class GlobalProfileViewModel : ViewModel() {
                     username = user.profile?.username ?: "",
                     phoneNumber = user.phoneNumber,
                     profilePicture = user.profile?.avatar ?: "https://i.pinimg.com/736x/8b/16/7a/8b167af653c2399dd93b952a48740620.jpg",
+                    address = user.profile?.address ?: "",
+                    description = user.profile?.info ?: "",
                     isLoading = false
                 )
             }
