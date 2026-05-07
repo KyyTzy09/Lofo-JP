@@ -118,6 +118,7 @@ fun AppNavigation(
         composable("profile") {
             ProfileScreen(
                 navController,
+                globalProfileViewModel= globalProfileViewModel,
                 viewModel = viewModel()
             )
         }
