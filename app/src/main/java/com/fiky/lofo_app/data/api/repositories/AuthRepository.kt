@@ -26,8 +26,7 @@ class AuthRepository {
         )
     }
 
-    suspend fun logout(): LogoutResponse {
-        authPreferences.clearToken()
-        return ApiService.authService.logout()
+    suspend fun logout() {
+        return authPreferences.clearToken()
     }
 }

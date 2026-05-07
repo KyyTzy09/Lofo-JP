@@ -59,7 +59,7 @@ fun OnboardingScreen(
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Black,
                         fontStyle = FontStyle.Italic,
-                        color = MaterialTheme.colorScheme.primary
+                        color = Color.White
                     )
                 )
 

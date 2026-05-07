@@ -13,7 +13,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,7 +41,15 @@ fun AnnouncementDetailScreen(
     val userState by profileViewModel.userState.collectAsState()
 
     val scrollState = rememberScrollState()
-    val isOwner = userState.userId === state.announcement?.user?.userId
+    val isOwner by remember(userState, state.announcement) {
+        derivedStateOf {
+            val currentUserId = userState.userId
+            val ownerId = state.announcement?.userId
+            // Debugging: Tambahkan log untuk memastikan ID mana yang kosong
+            // println("Current: $currentUserId, Owner: $ownerId")
+            currentUserId.isNotEmpty() && currentUserId == ownerId
+        }
+    }
 
     LaunchedEffect(announcementId) {
         viewModel.getDetail(announcementId)
@@ -224,7 +234,7 @@ fun AnnouncementDetailScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 AsyncImage(
-                                    model = user.profile?.avatar?: "https://i.pinimg.com/736x/8b/16/7a/8b167af653c2399dd93b952a48740620.jpg",
+                                    model = data.user.profile?.avatar?: "https://i.pinimg.com/736x/8b/16/7a/8b167af653c2399dd93b952a48740620.jpg",
                                     contentDescription = null,
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Crop
@@ -235,7 +245,7 @@ fun AnnouncementDetailScreen(
 
                             Column(Modifier.weight(1f)) {
                                 Text(
-                                    text = user.profile?.username ?: "Anonymous User",
+                                    text = data.user.profile?.username ?: "Anonymous User",
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.primary
                                 )

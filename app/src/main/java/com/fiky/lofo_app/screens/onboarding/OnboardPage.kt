@@ -72,13 +72,13 @@ fun StepOne() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            "Add Item",
+            "Tambahkan Barang",
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            "Register your premium belongings. Provide descriptions and photos to create a unique digital identity for each item.",
+            "Daftarkan barangmu ke aplikasi kami, dan dapatkan kemudahan dalam melacak lokasi barang yang hilang.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -135,13 +135,13 @@ fun StepTwo() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            "Secure QR Code",
+            "Keamanan QR Code",
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            "A unique encrypted QR code is generated. Download and attach it to your item via our premium tags or custom stickers.",
+            "Kode QR terenkripsi unik akan dihasilkan. Unduh dan tempelkan pada barang Anda.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -158,7 +158,9 @@ fun StepThreeFour() {
             .background(Color.White.copy(alpha = 0.7f))
             .padding(24.dp)
     ) {
-        Box(
+        AsyncImage(
+            model = "https://cdn-icons-png.freepik.com/512/7655/7655679.png",
+            contentDescription = "Image3",
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
@@ -175,13 +177,13 @@ fun StepThreeFour() {
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            "Smart Status Management",
+            "Announcement Features",
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            "Lost an item? One-tap to update status to Lost. Once recovered, toggle it back to Returned to resume protection.",
+            "Kehilangan Barang? Tambahkan pengumuman dan dapatkan kemudahan dalam melacak lokasi barang yang hilang.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -214,23 +216,18 @@ fun StepFive() {
                 .fillMaxWidth()
                 .height(200.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color.DarkGray.copy(alpha = 0.5f)),
-            contentAlignment = Alignment.Center
-        ) {
-             Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(Color.White.copy(alpha = 0.1f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(48.dp)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(Color.Transparent, Color(0xFF14002F).copy(alpha = 0.6f))
+                    )
                 )
-            }
+        ) {
+            AsyncImage(
+                model = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnFyQY5warMx0tDRconlQsXpyi1gbADjcmFA&s",
+                contentDescription = "Image2",
+                modifier = Modifier
+                    .fillMaxSize(),
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -242,13 +239,13 @@ fun StepFive() {
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            "Instant Connection",
+            "Smart Location",
             style = MaterialTheme.typography.headlineMedium.copy(fontSize = 32.sp),
             color = Color.White
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            "When someone finds your item, scanning the QR code brings them directly to a secure detail page with your recovery instructions.",
+            "Ketika seseorang menemukan barangmu, Barcode yang discan akan langsung mengupdate lokasi barang kamu!",
             style = MaterialTheme.typography.bodyMedium,
             color = Color.White.copy(alpha = 0.8f)
         )

@@ -120,6 +120,7 @@ fun AppNavigation(
         composable("profile") {
             ProfileScreen(
                 navController,
+                snackbarHostState,
                 globalProfileViewModel= globalProfileViewModel,
                 viewModel = viewModel()
             )
