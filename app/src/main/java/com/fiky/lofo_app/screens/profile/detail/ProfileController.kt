@@ -35,7 +35,7 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    fun logout(onSuccess: () -> Unit) {
+    fun logout(onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             try {
                 authrepo.logout()
@@ -43,6 +43,7 @@ class ProfileViewModel : ViewModel() {
             }
             catch (e: Exception) {
                 state = state.copy(error = e.message ?: "Gagal logout")
+                onError(e.message ?: "Gagal logout")
             }
         }
     }

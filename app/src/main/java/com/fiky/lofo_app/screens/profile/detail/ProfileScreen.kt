@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,14 +24,17 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.fiky.lofo_app.screens.profile.global.GlobalProfileViewModel
 import com.fiky.lofo_app.utils.TextUtils
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     navController: NavController,
+    snackbarHostState: SnackbarHostState,
     globalProfileViewModel: GlobalProfileViewModel,
     viewModel: ProfileViewModel = viewModel()
 ) {
+    var scope = rememberCoroutineScope()
     val state = viewModel.state
     val user = state.user
     // Menggunakan Global State profil
@@ -155,7 +159,17 @@ fun ProfileScreen(
 
             // Logout Button
             OutlinedButton(
-                onClick = { viewModel.logout { navController.navigate("login") { popUpTo(0) } } },
+                onClick = {
+                    viewModel.logout(
+                        onSuccess = {
+                            navController.navigate("login") { popUpTo(0) }
+                            scope.launch { snackbarHostState.showSnackbar("Berhasil Logout") }
+                        },
+                        onError = {
+                            scope.launch { snackbarHostState.showSnackbar(it) }
+                        }
+                    )
+                },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
