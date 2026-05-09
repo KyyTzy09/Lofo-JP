@@ -26,7 +26,7 @@ class AnnouncementRepository {
         return ApiService.announcementService.getAnnouncementDetail(id)
     }
 
-    suspend fun UpdateAnnounecment(id: String, announcementDto: UpdateAnnouncementRequest): UpdateAnnouncementResponse {
+    suspend fun UpdateAnnouncement(id: String, announcementDto: UpdateAnnouncementRequest): UpdateAnnouncementResponse {
         return ApiService.announcementService.updateAnnouncementStatus(id, announcementDto)
     }
 

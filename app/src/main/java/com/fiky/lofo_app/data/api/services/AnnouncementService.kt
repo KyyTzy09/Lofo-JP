@@ -15,6 +15,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface AnnouncementService {
+    @PATCH("announcements/{id}/aprove")
     @POST("announcements")
     suspend fun createAnnouncement(
         @Body announcementDto: CreateAnnouncementRequest

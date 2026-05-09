@@ -8,7 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fiky.lofo_app.data.api.dto.announcement.UpdateAnnouncementRequest
 import com.fiky.lofo_app.data.api.repositories.AnnouncementRepository
+import com.fiky.lofo_app.data.models.AnnouncementStatus
 import kotlinx.coroutines.launch
 
 
@@ -18,34 +20,53 @@ class AnnouncementDetailViewModel : ViewModel() {
     var state by mutableStateOf(AnnouncementDetailState())
         private set
 
-    fun getDetail(id: String) {
+    fun markAsCompleted(id: String) {
         viewModelScope.launch {
             state = state.copy(isLoading = true, error = null)
             try {
-                val result = announcementRepo.GetAnnouncementDetail(id)
+                val result = announcementRepo.UpdateAnnouncement(
+                    id, UpdateAnnouncementRequest(
+                        AnnouncementStatus.CLOSED
+                    )
+                )
                 state = state.copy(announcement = result.data)
             } catch (e: Exception) {
-                state = state.copy(error = e.localizedMessage ?: "Gagal memuat detail")
+                state = state.copy(error = e.localizedMessage ?: "Gagal mengubah status")
             } finally {
                 state = state.copy(isLoading = false)
             }
         }
     }
 
-    fun contactOwner(context: Context, phoneNumber: String) {
-        try {
-            // Format nomor harus diawali dengan kode negara (misal: 62 untuk Indonesia)
-            // Hilangkan karakter non-digit seperti '+' atau '-'
-            val cleanNumber = phoneNumber.replace(Regex("[^0-9]"), "")
-            val url = "https://wa.me/$cleanNumber?text=${Uri.encode("Halo, saya ingin bertanya mengenai barang anda yang hilang.")}"
-
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse(url)
+        fun getDetail(id: String) {
+            viewModelScope.launch {
+                state = state.copy(isLoading = true, error = null)
+                try {
+                    val result = announcementRepo.GetAnnouncementDetail(id)
+                    state = state.copy(announcement = result.data)
+                } catch (e: Exception) {
+                    state = state.copy(error = e.localizedMessage ?: "Gagal memuat detail")
+                } finally {
+                    state = state.copy(isLoading = false)
+                }
             }
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            // Handle error jika terjadi kesalahan saat memulai intent
-            e.printStackTrace()
         }
-    }
+
+        fun contactOwner(context: Context, phoneNumber: String) {
+            try {
+                // Format nomor harus diawali dengan kode negara (misal: 62 untuk Indonesia)
+                // Hilangkan karakter non-digit seperti '+' atau '-'
+                val cleanNumber = phoneNumber.replace(Regex("[^0-9]"), "")
+                val url =
+                    "https://wa.me/$cleanNumber?text=${Uri.encode("Halo, saya ingin bertanya mengenai barang anda yang hilang.")}"
+
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse(url)
+                }
+                context.startActivity(intent)
+            } catch (e: Exception) {
+                // Handle error jika terjadi kesalahan saat memulai intent
+                e.printStackTrace()
+            }
+        }
 }
