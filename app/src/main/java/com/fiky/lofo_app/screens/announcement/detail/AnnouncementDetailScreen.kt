@@ -24,8 +24,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.fiky.lofo_app.MyApp
+import com.fiky.lofo_app.data.models.AnnouncementStatus
 import com.fiky.lofo_app.screens.home.StatusBadge
 import com.fiky.lofo_app.screens.profile.global.GlobalProfileViewModel
 
@@ -34,7 +36,7 @@ import com.fiky.lofo_app.screens.profile.global.GlobalProfileViewModel
 fun AnnouncementDetailScreen(
     announcementId: String,
     onBack: () -> Unit,
-    viewModel: AnnouncementDetailViewModel,
+    viewModel: AnnouncementDetailViewModel = viewModel(),
     profileViewModel: GlobalProfileViewModel
     ) {
     val state = viewModel.state
@@ -81,7 +83,7 @@ fun AnnouncementDetailScreen(
                 Button(
                     onClick = {
                         if (isOwner) {
-//                            viewModel.updateStatus(announcementId, AnnouncementStatus.CLOSED)
+                            viewModel.markAsCompleted(announcementId)
                         } else {
                             viewModel.contactOwner(
                                 context = MyApp.instance,
