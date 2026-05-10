@@ -3,6 +3,8 @@ package com.fiky.lofo_app.data.api.repositories
 import com.fiky.lofo_app.data.api.dto.item.BulkItemResponse
 import com.fiky.lofo_app.data.api.dto.item.CreateItemResponse
 import com.fiky.lofo_app.data.api.dto.item.ItemDetailResponse
+import com.fiky.lofo_app.data.api.dto.item.UpdateItemLocationRequest
+import com.fiky.lofo_app.data.api.dto.item.UpdateItemLocationResponse
 import com.fiky.lofo_app.data.api.dto.item.UpdateItemRequest
 import com.fiky.lofo_app.data.api.services.ApiService
 import okhttp3.MediaType.Companion.toMediaType
@@ -30,6 +32,16 @@ class ItemRepository {
         return ApiService.itemService.updateItem(
             itemId,
             UpdateItemRequest(itemName, itemInfo, status)
+        )
+    }
+
+    suspend fun UpdateItemLocation(itemId: String, lat: Double, lon: Double): UpdateItemLocationResponse {
+        return ApiService.itemService.updateItemLocation(
+            itemId,
+            updateItemLocationDto = UpdateItemLocationRequest(
+                latitude = lat,
+                longitude = lon,
+            )
         )
     }
 
