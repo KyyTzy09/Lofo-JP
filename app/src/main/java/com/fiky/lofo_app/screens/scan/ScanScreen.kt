@@ -103,8 +103,15 @@ fun ScanScreen(
             if (state.isCameraPermissionGranted) {
                 CameraPreview(
                     onQrCodeScanned = { code ->
-                        controller.onQrCodeDetected(code)
-                        onNavigateToDetail(code)
+                        controller.onQrCodeDetected(
+                            code,
+                            onSuccess = {
+                                onNavigateToDetail(code)
+                                        },
+                            onError = {
+                                onNavigateToDetail(code)
+                            }
+                        )
                     },
                     flashlightOn = state.isFlashlightOn
                 )
