@@ -82,7 +82,7 @@ fun AnnouncementDetailScreen(
             ) {
                 Button(
                     onClick = {
-                        if (isOwner) {
+                        if (isOwner && state.announcement?.status === AnnouncementStatus.PENDING) {
                             viewModel.markAsCompleted(announcementId)
                         } else {
                             viewModel.contactOwner(
@@ -99,16 +99,20 @@ fun AnnouncementDetailScreen(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = Color.White
-                    )
+                    ),
                 ) {
                     if (isOwner) {
                         Icon(Icons.Default.CheckCircle, null)
                         Spacer(Modifier.width(8.dp))
-                        Text("Tandai Selesai", fontWeight = FontWeight.ExtraBold, letterSpacing = 1.sp)
+                        Text(
+                            if (state.announcement?.status === AnnouncementStatus.PENDING) "Tandai Selesai" else "Pengumuman Berakhir",
+                            fontWeight = FontWeight.ExtraBold, letterSpacing = 1.sp)
                     } else {
                         Icon(Icons.Default.ChatBubble, null)
                         Spacer(Modifier.width(8.dp))
-                        Text("Hubungi Pemilik", fontWeight = FontWeight.ExtraBold, letterSpacing = 1.sp)
+                        Text(
+                            if (state.announcement?.status === AnnouncementStatus.PENDING) "Hubungi Pemilik" else "Pengumuman Berakhir",
+                            fontWeight = FontWeight.ExtraBold, letterSpacing = 1.sp)
                     }
                 }
             }

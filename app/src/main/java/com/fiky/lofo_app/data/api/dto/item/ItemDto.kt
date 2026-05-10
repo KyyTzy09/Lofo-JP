@@ -12,6 +12,12 @@ data class UpdateItemRequest(
     val status: String
 )
 
+
+data class UpdateItemLocationRequest(
+    val latitude: Double,
+    val longitude: Double
+)
+
 data class CreateItemResponse (
     val message: String,
     val data: ItemModel
@@ -25,4 +31,9 @@ data class ItemDetailResponse(
 data class BulkItemResponse(
     val message: String,
     val data: List<ItemModel>
+)
+
+data class UpdateItemLocationResponse(
+    val message: String,
+    val data: ItemModel
 )
