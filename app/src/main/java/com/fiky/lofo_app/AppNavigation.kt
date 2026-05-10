@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import com.fiky.lofo_app.layouts.MainLayout
 import com.fiky.lofo_app.screens.announcement.create.CreateAnnouncementScreen
 import com.fiky.lofo_app.screens.announcement.detail.AnnouncementDetailScreen
+import com.fiky.lofo_app.screens.announcement.user.UserAnnouncementScreen
 import com.fiky.lofo_app.screens.auth.login.LoginScreen
 import com.fiky.lofo_app.screens.auth.login.LoginViewModel
 import com.fiky.lofo_app.screens.auth.register.RegisterScreen
@@ -181,6 +182,18 @@ fun AppNavigation(
                     navController.navigate("item_detail/$it") {
                         popUpTo("home") { inclusive = true }
                     }
+                }
+            )
+        }
+
+        composable("announcement_user") {
+            UserAnnouncementScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToDetail = {
+                    navController.navigate("announcement_detail/$it")
+                },
+                onNavigateToCreate = {
+                    navController.navigate("announcement_create")
                 }
             )
         }

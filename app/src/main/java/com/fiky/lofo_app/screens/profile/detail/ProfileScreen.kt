@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -22,6 +23,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import com.fiky.lofo_app.screens.profile.global.GlobalProfileViewModel
 import com.fiky.lofo_app.utils.TextUtils
 import kotlinx.coroutines.launch
@@ -38,6 +41,7 @@ fun ProfileScreen(
     val state = viewModel.state
     val user = state.user
     // Menggunakan Global State profil
+    val context = LocalContext.current
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -67,9 +71,15 @@ fun ProfileScreen(
                     color = MaterialTheme.colorScheme.surfaceContainer
                 ) {
                     AsyncImage(
-                        model = user?.profile?.avatar ?: "https://via.placeholder.com/150",
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize().clip(CircleShape),
+                        model = ImageRequest.Builder(context)
+                            .data(user?.profile?.avatar ?: "https://via.placeholder.com/150")
+                            .decoderFactory(SvgDecoder.Factory()) // <--- INI KUNCINYA
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = "Avatar User",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
                 }

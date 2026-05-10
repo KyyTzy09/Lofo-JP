@@ -40,6 +40,8 @@ android {
 }
 
 dependencies {
+    implementation("io.coil-kt:coil-compose:2.6.0") // Library utama
+    implementation("io.coil-kt:coil-svg:2.6.0")    // TAMBAHKAN INI agar bisa render SVG
 //    Map
     implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation("org.osmdroid:osmdroid-android:6.1.18")

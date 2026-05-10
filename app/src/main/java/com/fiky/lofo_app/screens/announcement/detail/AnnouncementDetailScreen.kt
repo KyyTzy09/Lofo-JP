@@ -2,6 +2,7 @@ package com.fiky.lofo_app.screens.announcement.detail
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -26,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import com.fiky.lofo_app.MyApp
 import com.fiky.lofo_app.data.models.AnnouncementStatus
 import com.fiky.lofo_app.screens.home.StatusBadge
@@ -41,7 +44,7 @@ fun AnnouncementDetailScreen(
     ) {
     val state = viewModel.state
     val userState by profileViewModel.userState.collectAsState()
-
+    val context = MyApp.instance
     val scrollState = rememberScrollState()
     val isOwner by remember(userState, state.announcement) {
         derivedStateOf {
@@ -143,9 +146,15 @@ fun AnnouncementDetailScreen(
                             .background(MaterialTheme.colorScheme.surfaceContainer)
                     ) {
                         AsyncImage(
-                            model = data.item.image,
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
+                            model = ImageRequest.Builder(context)
+                                .data(state.announcement.user?.profile?.avatar ?: "https://via.placeholder.com/150")
+                                .decoderFactory(SvgDecoder.Factory()) // <--- INI KUNCINYA
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = "Avatar User",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(CircleShape),
                             contentScale = ContentScale.Crop
                         )
 
