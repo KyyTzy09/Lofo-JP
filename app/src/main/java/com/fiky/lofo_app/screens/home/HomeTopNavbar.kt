@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,9 +23,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import com.fiky.lofo_app.screens.profile.global.UserState
 
 
@@ -32,6 +36,7 @@ import com.fiky.lofo_app.screens.profile.global.UserState
 fun HomeTopAppBar(
     user: UserState
 ) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -48,8 +53,15 @@ fun HomeTopAppBar(
             ) {
 
                 AsyncImage(
-                    model = user.profilePicture ?: "https://via.placeholder.com/150",
-                    contentDescription = "Profile",
+                    model = ImageRequest.Builder(context)
+                        .data(user.profilePicture ?: "https://via.placeholder.com/150")
+                        .decoderFactory(SvgDecoder.Factory()) // <--- INI KUNCINYA
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = "Avatar User",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
             }
