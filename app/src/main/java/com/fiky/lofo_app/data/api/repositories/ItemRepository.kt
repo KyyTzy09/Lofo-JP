@@ -28,10 +28,10 @@ class ItemRepository {
         return ApiService.itemService.getItemDetail(itemId)
     }
 
-    suspend fun UpdateItem(itemId: String, itemName: String, itemInfo: String, status: String): ItemDetailResponse {
+    suspend fun UpdateItem(itemId: String, itemName: String, itemInfo: String): ItemDetailResponse {
         return ApiService.itemService.updateItem(
             itemId,
-            UpdateItemRequest(itemName, itemInfo, status)
+            UpdateItemRequest(itemName, itemInfo)
         )
     }
 

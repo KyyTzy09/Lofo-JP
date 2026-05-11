@@ -10,17 +10,9 @@ import com.fiky.lofo_app.data.models.ItemModel
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
-data class UserItemState(
-    val items: List<ItemModel> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null,
-    val searchQuery: String = ""
-)
-
 class UserItemViewModel : ViewModel() {
     private val userRepo: UserRepository = UserRepository()
-
-    var state by mutableStateOf(UserItemState())
+    var state by mutableStateOf(ItemUserState())
         private set
 
     fun onSearchQueryChange(query: String) {

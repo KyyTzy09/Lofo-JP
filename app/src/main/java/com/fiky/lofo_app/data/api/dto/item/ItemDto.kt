@@ -9,7 +9,6 @@ data class UpdateItemRequest(
     val itemName: String,
     @SerializedName("item_info")
     val itemInfo: String,
-    val status: String
 )
 
 
