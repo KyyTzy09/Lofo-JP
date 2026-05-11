@@ -29,7 +29,7 @@ fun MainLayout(
         "item_detail/{itemId}",
         "announcement_detail/{announcementId}",
         "profile_update",
-        "announcement_user"
+        "item_user"
     )
 
     Scaffold(

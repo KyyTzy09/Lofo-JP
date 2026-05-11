@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AllInbox
+import androidx.compose.material.icons.filled.Announcement
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCodeScanner
@@ -52,7 +53,7 @@ data class NavItem(
 fun BottomNavBar(navController: NavHostController) {
     val items = listOf(
         NavItem("home", Icons.Default.Home, "Home"),
-        NavItem("item_user", Icons.Default.AllInbox, "Items"),
+        NavItem("announcement_user", Icons.Default.Announcement, "Announcement"),
         NavItem("scan", Icons.Default.QrCodeScanner, "Scan"),
         NavItem("announcement_create", Icons.Default.Add, "Add"),
         NavItem("profile", Icons.Default.Person, "Profile"),

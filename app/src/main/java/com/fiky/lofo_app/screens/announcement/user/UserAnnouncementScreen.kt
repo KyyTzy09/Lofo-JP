@@ -30,13 +30,27 @@ fun UserAnnouncementScreen(
     viewModel: UserAnnouncementViewModel = viewModel()
 ) {
     val state = viewModel.state
+    val selectorList = listOf(
+        SelectorList(
+            label = "Semua",
+            value = "All"
+        ),
+        SelectorList(
+            label = "Aktif",
+            value = "Pending"
+        ),
+        SelectorList(
+            label = "Selesai",
+            value = "Resolved"
+        )
+    )
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
-                    Text("MY ANNOUNCEMENTS",
+                    Text("Pengumuman Saya",
                         style = MaterialTheme.typography.labelLarge.copy(
                             letterSpacing = 2.sp,
                             fontWeight = FontWeight.Bold
@@ -44,21 +58,8 @@ fun UserAnnouncementScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    }
-                },
-                actions = {
-                    Surface(
-                        modifier = Modifier.padding(end = 16.dp).size(32.dp),
-                        shape = CircleShape,
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-                    ) {
-                        AsyncImage(
-                            model = "https://via.placeholder.com/150",
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop
-                        )
+                    IconButton(onClick = {}) {
+                        Icon(Icons.Default.Announcement, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -76,14 +77,14 @@ fun UserAnnouncementScreen(
             item(span = { GridItemSpan(2) }) {
                 Column(modifier = Modifier.padding(bottom = 8.dp)) {
                     Text(
-                        "Pengumuman Aktif",
+                        "Pengumuman",
                         style = MaterialTheme.typography.headlineLarge.copy(
                             fontWeight = FontWeight.ExtraBold,
                             color = MaterialTheme.colorScheme.primary
                         )
                     )
                     Text(
-                        "Lihat semua pengumuman yang aktif",
+                        "Lihat semua pengumuman anda",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -96,15 +97,15 @@ fun UserAnnouncementScreen(
                     modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    listOf("Semua", "Aktif", "Selesai").forEach { status ->
+                    selectorList.forEach { status ->
                         FilterChip(
-                            selected = state.selectedStatus == status,
-                            onClick = { viewModel.filterByStatus(status) },
-                            label = { Text(status) },
+                            selected = state.selectedStatus == status.value,
+                            onClick = { viewModel.filterByStatus(status.value) },
+                            label = { Text(status.label) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.primary,
                                 selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                                containerColor = MaterialTheme.colorScheme.surface
                             ),
                             border = null,
                             shape = CircleShape
@@ -124,7 +125,7 @@ fun UserAnnouncementScreen(
                     onClick = onNavigateToCreate,
                     modifier = Modifier.aspectRatio(0.7f).fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
-                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    color = MaterialTheme.colorScheme.surface,
                     border = BorderStroke(2.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                 ) {
                     Column(
@@ -133,14 +134,14 @@ fun UserAnnouncementScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Surface(
-                            modifier = Modifier.size(48.dp),
+                            modifier = Modifier.size(50.dp),
                             shape = CircleShape,
-                            color = MaterialTheme.colorScheme.background
+                            color = MaterialTheme.colorScheme.surfaceContainer
                         ) {
                             Icon(Icons.Default.Add, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         }
                         Spacer(Modifier.height(12.dp))
-                        Text("New", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text("Tambah", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                     }
                 }
             }
