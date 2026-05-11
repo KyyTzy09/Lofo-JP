@@ -48,7 +48,7 @@ fun UpdateItemScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text("Update Item", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                    Text("Update Barang", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -87,43 +87,26 @@ fun UpdateItemScreen(
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
-
-                        // Floating Badge (Vault Style)
-                        Surface(
-                            modifier = Modifier.align(Alignment.BottomStart).padding(20.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            color = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(Icons.Default.Verified, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
-                                Spacer(Modifier.width(8.dp))
-                                Text("VAULTED ITEM", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, letterSpacing = 1.sp)
-                            }
-                        }
                     }
 
                     Spacer(modifier = Modifier.height(32.dp))
 
                     // --- FORM FIELDS ---
                     UpdateInputFields(
-                        label = "Item Name",
+                        label = "Nama Barang",
                         value = state.name,
                         onValueChange = viewModel::onNameChange,
-                        placeholder = "Enter item name",
+                        placeholder = "Masukkan nama barang",
                         icon = Icons.Default.Inventory2
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
 
                     UpdateInputFields(
-                        label = "Item Description",
+                        label = "Deskripsi Barang",
                         value = state.description,
                         onValueChange = viewModel::onDescriptionChange,
-                        placeholder = "Enter item description",
+                        placeholder = "Masukkan deskripsi barang",
                         icon = Icons.Default.Description,
                         isTextArea = true
                     )
@@ -153,26 +136,16 @@ fun UpdateItemScreen(
                             .fillMaxWidth()
                             .height(64.dp),
                         shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = Color.White)
                     ) {
                         if (state.isLoading) {
                             CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimaryContainer)
                         } else {
-                            Text("Save Changes", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold)
+                            Text("Simpan Perubahan", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold)
                             Spacer(Modifier.width(12.dp))
                             Icon(Icons.Default.CheckCircle, null)
                         }
                     }
-
-                    Text(
-                        "Last synced to secure vault",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(100.dp))
                 }
             }
         }
