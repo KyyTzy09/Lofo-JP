@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.LocationSearching
 import androidx.compose.material.icons.filled.MoreVert
@@ -43,13 +45,18 @@ import com.fiky.lofo_app.data.models.ItemModel
 import com.fiky.lofo_app.data.models.ItemStatus
 
 @Composable
-fun UserItemCard(item: ItemModel, onClick: () -> Unit) {
+fun UserItemCard(
+    item: ItemModel,
+    onCardClick: () -> Unit,
+    onUpdate: (String) -> Unit,
+    onDelete: (String) -> Unit
+) {
     val isLost = item.status == ItemStatus.HILANG
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable { onCardClick() },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -110,7 +117,7 @@ fun UserItemCard(item: ItemModel, onClick: () -> Unit) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Button(
-                    onClick = onClick,
+                    onClick = onCardClick,
                     modifier = Modifier.weight(1f).height(48.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -125,17 +132,28 @@ fun UserItemCard(item: ItemModel, onClick: () -> Unit) {
                     )
                 }
 
-                // Tombol Lokasi (Dibuat Dark & Purple Accent)
                 IconButton(
-                    onClick = { /* Navigasi ke Map */ },
+                    onClick = { onUpdate(item.itemId) },
                     modifier = Modifier
                         .size(48.dp)
                         .background(MaterialTheme.colorScheme.surfaceContainerHighest, RoundedCornerShape(12.dp))
                 ) {
                     Icon(
-                        Icons.Default.LocationOn,
+                        Icons.Default.Edit,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary // Ikon Ungu
+                    )
+                }
+                IconButton(
+                    onClick = { onDelete(item.itemId) },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(Color.Red, RoundedCornerShape(12.dp))
+                ) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.surfaceContainer // Ikon Ungu
                     )
                 }
             }

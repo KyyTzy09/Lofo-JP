@@ -42,58 +42,53 @@ fun OnboardingPage(page: Int) {
 
 @Composable
 fun StepOne() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
-            .clip(RoundedCornerShape(32.dp))
-            .background(Color.White.copy(alpha = 0.7f))
-            .padding(24.dp)
-    ) {
-        Box(
+    OnboardingCard {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(
-                    Brush.verticalGradient(
-                        listOf(Color.Transparent, Color(0xFF14002F).copy(alpha = 0.6f))
-                    )
-                )
+                .fillMaxSize()
+                .clip(RoundedCornerShape(32.dp))
         ) {
-            AsyncImage(
-                model = "https://cdn-icons-png.freepik.com/512/10608/10608883.png",
-                contentDescription = "Image1",
+            Box(
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(
+                        MaterialTheme.colorScheme.primaryContainer
+                    )
+            ) {
+                AsyncImage(
+                    model = "https://cdn-icons-png.freepik.com/512/10608/10608883.png",
+                    contentDescription = "Image1",
+                    modifier = Modifier
+                        .fillMaxSize(),
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                "Tambahkan Barang",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                "Daftarkan barangmu ke aplikasi kami, dan dapatkan kemudahan dalam melacak lokasi barang yang hilang.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            "Tambahkan Barang",
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.primary
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            "Daftarkan barangmu ke aplikasi kami, dan dapatkan kemudahan dalam melacak lokasi barang yang hilang.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
     }
 }
 
 @Composable
 fun StepTwo() {
+    OnboardingCard {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
+            .fillMaxSize()
             .clip(RoundedCornerShape(32.dp))
-            .background(Color.White.copy(alpha = 0.7f))
-            .padding(24.dp)
     ) {
         Box(
             modifier = Modifier
@@ -117,19 +112,6 @@ fun StepTwo() {
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
-            
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                contentAlignment = Alignment.BottomStart
-            ) {
-                Text(
-                    "STEP 02",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.White
-                )
-            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -145,18 +127,17 @@ fun StepTwo() {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        }
     }
 }
 
 @Composable
 fun StepThreeFour() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
+    OnboardingCard {
+        Column(
+            modifier = Modifier
+            .fillMaxSize()
             .clip(RoundedCornerShape(32.dp))
-            .background(Color.White.copy(alpha = 0.7f))
-            .padding(24.dp)
     ) {
         AsyncImage(
             model = "https://cdn-icons-png.freepik.com/512/7655/7655679.png",
@@ -165,16 +146,11 @@ fun StepThreeFour() {
                 .fillMaxWidth()
                 .height(200.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color.LightGray)
+                .background(MaterialTheme.colorScheme.primaryContainer)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            "STEP 03 & 04",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.secondary
-        )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             "Announcement Features",
@@ -190,26 +166,18 @@ fun StepThreeFour() {
         
         Spacer(modifier = Modifier.height(16.dp))
         Row(modifier = Modifier.fillMaxWidth()) {
-            Box(modifier = Modifier.weight(1f).height(8.dp).clip(RoundedCornerShape(4.dp)).background(MaterialTheme.colorScheme.surfaceContainer)) {
-                Box(modifier = Modifier.fillMaxWidth(0.5f).height(8.dp).background(MaterialTheme.colorScheme.primary))
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Box(modifier = Modifier.weight(1f).height(8.dp).clip(RoundedCornerShape(4.dp)).background(MaterialTheme.colorScheme.surfaceContainer)) {
-                Box(modifier = Modifier.fillMaxWidth().height(8.dp).background(MaterialTheme.colorScheme.secondaryContainer))
-            }
+        }
         }
     }
 }
 
 @Composable
 fun StepFive() {
+    OnboardingCard {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
+            .fillMaxSize()
             .clip(RoundedCornerShape(32.dp))
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .padding(24.dp)
     ) {
         Box(
             modifier = Modifier
@@ -217,10 +185,8 @@ fun StepFive() {
                 .height(200.dp)
                 .clip(RoundedCornerShape(16.dp))
                 .background(
-                    Brush.verticalGradient(
-                        listOf(Color.Transparent, Color(0xFF14002F).copy(alpha = 0.6f))
+                    MaterialTheme.colorScheme.primaryContainer
                     )
-                )
         ) {
             AsyncImage(
                 model = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnFyQY5warMx0tDRconlQsXpyi1gbADjcmFA&s",
@@ -229,19 +195,12 @@ fun StepFive() {
                     .fillMaxSize(),
             )
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            "STEP 05",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
-        )
+        
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             "Smart Location",
             style = MaterialTheme.typography.headlineMedium.copy(fontSize = 32.sp),
-            color = Color.White
+            color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
@@ -263,5 +222,6 @@ fun StepFive() {
             Spacer(modifier = Modifier.width(12.dp))
             Text("Location-Ping Reporting", style = MaterialTheme.typography.labelLarge, color = Color.White)
         }
+    }
     }
 }

@@ -66,7 +66,7 @@ fun OnboardingScreen(
                 Text(
                     "Skip",
                     style = MaterialTheme.typography.labelLarge.copy(
-                        color = Color(0xFF6D28D9)
+                        color = Color(0xFF6C34BE)
                     ),
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))

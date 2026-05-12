@@ -132,7 +132,7 @@ fun ProfileScreen(
                 ) {
                     Icon(Icons.Default.Category, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("My Items", fontWeight = FontWeight.Bold)
+                    Text("Barang Saya", fontWeight = FontWeight.Bold)
                 }
             }
 

@@ -27,7 +27,8 @@ import com.fiky.lofo_app.data.models.ItemStatus
 fun UserItemScreen(
     viewModel: UserItemViewModel,
     onNavigateToDetail: (String) -> Unit,
-    onAddItem: () -> Unit
+    onAddItem: () -> Unit,
+    onUpdateItem: (String) -> Unit,
 ) {
     val state = viewModel.state
 
@@ -124,8 +125,10 @@ fun UserItemScreen(
             items(state.items) { item ->
                 UserItemCard(
                     item = item,
-                    onClick = { onNavigateToDetail(item.itemId) }
-                )
+                    onCardClick = { onNavigateToDetail(item.itemId) },
+                    onUpdate = onUpdateItem,
+                    onDelete = { /* Delete Placeholder */ }
+                    )
             }
         }
     }

@@ -23,6 +23,7 @@ import com.fiky.lofo_app.screens.home.HomeScreen
 import com.fiky.lofo_app.screens.home.HomeViewModel
 import com.fiky.lofo_app.screens.item.create.CreateItemScreen
 import com.fiky.lofo_app.screens.item.detail.ItemDetailScreen
+import com.fiky.lofo_app.screens.item.update.UpdateItemScreen
 import com.fiky.lofo_app.screens.item.user.UserItemScreen
 import com.fiky.lofo_app.screens.onboarding.OnboardingScreen
 import com.fiky.lofo_app.screens.profile.detail.ProfileScreen
@@ -150,7 +151,8 @@ fun AppNavigation(
                     onNavigateToDetail = { itemId ->
                         navController.navigate("item_detail/$itemId")
                     },
-                    onAddItem = { navController.navigate("item_create") }
+                    onAddItem = { navController.navigate("item_create") },
+                    onUpdateItem = { itemId -> navController.navigate("item_update/$itemId") }
                 )
         }
 
@@ -170,6 +172,16 @@ fun AppNavigation(
             ItemDetailScreen(
                 itemId = itemId,
                 onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("item_update/{itemId}") { backStackEntry ->
+            val itemId = backStackEntry.arguments?.getString("itemId")
+                ?: return@composable
+            UpdateItemScreen(
+                itemId,
+                onBack = { navController.popBackStack() },
+                snackbarHostState = snackbarHostState
             )
         }
 
