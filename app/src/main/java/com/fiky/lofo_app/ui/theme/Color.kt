@@ -12,7 +12,7 @@ val Secondary = Color(0xFFB39DDB)
 val OnSecondary = Color(0xFF311B92)
 val SecondaryContainer = Color(0xFF4527A0)
 val OnSecondaryContainer = Color(0xFFEDE7F6)
-val Background = Color(0xFF121212)
+val Background = Color(0xFF020202)
 val OnBackground = Color(0xFFE5E7EB)
 
 val Surface = Color(0xFF1E1E1E)
