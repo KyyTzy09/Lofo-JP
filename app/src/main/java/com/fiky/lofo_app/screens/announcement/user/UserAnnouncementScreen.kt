@@ -1,5 +1,10 @@
 package com.fiky.lofo_app.screens.announcement.user
 
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
@@ -9,17 +14,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
-import com.fiky.lofo_app.data.models.AnnouncementModel
-import com.fiky.lofo_app.data.models.AnnouncementStatus
+import com.fiky.lofo_app.composables.ToastType
+import com.fiky.lofo_app.screens.voice.VoiceCommandModal
+import com.fiky.lofo_app.utils.ToastHelper
+import kotlinx.coroutines.launch
+import java.util.jar.Manifest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,8 +38,12 @@ fun UserAnnouncementScreen(
     onBack: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
     onNavigateToCreate: () -> Unit,
-    viewModel: UserAnnouncementViewModel = viewModel()
+    viewModel: UserAnnouncementViewModel = viewModel(),
+    snackbarHostState: SnackbarHostState
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
     val state = viewModel.state
     val selectorList = listOf(
         SelectorList(
@@ -44,8 +59,46 @@ fun UserAnnouncementScreen(
             value = "Resolved"
         )
     )
+    var showVoiceModal by remember { mutableStateOf(false) }
+
+    val permissionLauncher = rememberLauncherForActivityResult (
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            showVoiceModal = true
+        } else {
+            scope.launch {
+                ToastHelper.show(snackbarHostState, "Izin Dibutuhkan!!", "Berikan izin untuk menggunakan microphone", ToastType.SUCCESS)
+            }
+        }
+    }
 
     Scaffold(
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = {
+                    val permissionCheckResult = ContextCompat.checkSelfPermission(
+                        context,
+                        android.Manifest.permission.RECORD_AUDIO
+                    )
+
+                    if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                        showVoiceModal = true
+                    } else {
+                        // Munculkan popup izin sistem
+                        permissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
+                    }
+                },
+                containerColor = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .navigationBarsPadding() // Otomatis naik mengikuti sistem navigasi/bottom bar
+                    .padding(bottom = 16.dp) // Jarak tambahan agar tidak menempel pas
+            ) {
+                Icon(Icons.Default.AutoAwesome, null)
+                Spacer(Modifier.width(8.dp))
+                Text("AI Voice")
+            }
+        },
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
@@ -66,6 +119,17 @@ fun UserAnnouncementScreen(
             )
         }
     ) { padding ->
+        if (showVoiceModal) {
+            VoiceCommandModal(
+                onDismiss = { showVoiceModal = false },
+                onSend = { transcript, isConnected ->
+                    // Logic kirim ke API AI kamu
+                    // Contoh: viewModel.createWithVoice(transcript, isConnected)
+                    showVoiceModal = false
+                }
+            )
+        }
+
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier.fillMaxSize().padding(padding),

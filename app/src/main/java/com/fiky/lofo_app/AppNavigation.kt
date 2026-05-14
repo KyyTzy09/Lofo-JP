@@ -206,7 +206,8 @@ fun AppNavigation(
                 },
                 onNavigateToCreate = {
                     navController.navigate("announcement_create")
-                }
+                },
+                snackbarHostState = snackbarHostState
             )
         }
 
