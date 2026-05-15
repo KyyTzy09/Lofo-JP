@@ -17,3 +17,14 @@ data class CreateAnnouncementResponse (
     val message: String,
     val data: AnnouncementModel
 )
+
+data class CreateAnnouncementWithVoiceRequest (
+    val text: String,
+    @SerializedName("connect_item")
+    val connectItem : Boolean,
+)
+
+data class CreateAnnouncementWithVoiceResponse(
+    val message: String,
+    val data: AnnouncementModel
+)

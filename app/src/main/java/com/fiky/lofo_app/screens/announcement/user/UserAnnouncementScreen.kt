@@ -123,9 +123,22 @@ fun UserAnnouncementScreen(
             VoiceCommandModal(
                 onDismiss = { showVoiceModal = false },
                 onSend = { transcript, isConnected ->
-                    // Logic kirim ke API AI kamu
-                    // Contoh: viewModel.createWithVoice(transcript, isConnected)
-                    showVoiceModal = false
+                    viewModel.CreateWithVoice(
+                        text = transcript,
+                        connectItem = isConnected,
+                        onSuccess = {
+                            scope.launch {
+                                ToastHelper.show(snackbarHostState, "Sukses", "Pengumuman berhasil dibuat", ToastType.SUCCESS)
+                            }
+                            showVoiceModal = false
+                            viewModel.fetchUserAnnouncements()
+                        },
+                        onError = {
+                            scope.launch {
+                                ToastHelper.show(snackbarHostState, "Gagal", it, ToastType.ERROR)
+                            }
+                        }
+                    )
                 }
             )
         }

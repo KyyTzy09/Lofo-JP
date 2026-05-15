@@ -4,6 +4,8 @@ import com.fiky.lofo_app.data.api.dto.announcement.AnnouncementDetail
 import com.fiky.lofo_app.data.api.dto.announcement.BulkAnnouncementDto
 import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementRequest
 import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementResponse
+import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementWithVoiceRequest
+import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementWithVoiceResponse
 import com.fiky.lofo_app.data.api.dto.announcement.PendingAnnouncements
 import com.fiky.lofo_app.data.api.dto.announcement.UpdateAnnouncementRequest
 import com.fiky.lofo_app.data.api.dto.announcement.UpdateAnnouncementResponse
@@ -20,6 +22,11 @@ interface AnnouncementService {
     suspend fun createAnnouncement(
         @Body announcementDto: CreateAnnouncementRequest
     ): CreateAnnouncementResponse
+
+    @POST("announcements/voice")
+    suspend fun createAnnouncementWithVoice(
+        @Body announcementDto: CreateAnnouncementWithVoiceRequest
+    ): CreateAnnouncementWithVoiceResponse
 
     @GET("announcements")
     suspend fun getAllAnnouncements(): BulkAnnouncementDto

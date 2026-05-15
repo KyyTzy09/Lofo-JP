@@ -4,6 +4,8 @@ import com.fiky.lofo_app.data.api.dto.announcement.AnnouncementDetail
 import com.fiky.lofo_app.data.api.dto.announcement.BulkAnnouncementDto
 import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementRequest
 import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementResponse
+import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementWithVoiceRequest
+import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementWithVoiceResponse
 import com.fiky.lofo_app.data.api.dto.announcement.PendingAnnouncements
 import com.fiky.lofo_app.data.api.dto.announcement.UpdateAnnouncementRequest
 import com.fiky.lofo_app.data.api.dto.announcement.UpdateAnnouncementResponse
@@ -16,6 +18,10 @@ class AnnouncementRepository {
 
     suspend fun GetAllPendingAnnouncements(): PendingAnnouncements {
         return ApiService.announcementService.getPendingAnnouncements()
+    }
+
+    suspend fun CreateAnnouncementWithVoice(dto : CreateAnnouncementWithVoiceRequest): CreateAnnouncementWithVoiceResponse {
+        return ApiService.announcementService.createAnnouncementWithVoice(dto)
     }
 
     suspend fun CreateAnnouncement( announcementDto: CreateAnnouncementRequest): CreateAnnouncementResponse {
