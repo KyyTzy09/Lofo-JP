@@ -7,5 +7,6 @@ data class UserAnnouncementState(
     val filteredAnnouncements: List<AnnouncementModel> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
-    val selectedStatus: String = "All"
+    val selectedStatus: String = "All",
+    val isAdding: Boolean = false
 )

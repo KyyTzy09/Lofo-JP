@@ -52,6 +52,7 @@ class UserAnnouncementViewModel : ViewModel() {
 
     fun CreateWithVoice(text: String, connectItem: Boolean, onSuccess: () -> Unit, onError: (err: String) -> Unit) {
         viewModelScope.launch {
+            state = state.copy(isAdding = true)
             try {
                 announcementRepo.CreateAnnouncementWithVoice(
                     CreateAnnouncementWithVoiceRequest(
@@ -61,6 +62,8 @@ class UserAnnouncementViewModel : ViewModel() {
                 onSuccess()
             } catch (e: Exception) {
                 onError(e.message ?: "Unknown error")
+            } finally {
+                state = state.copy(isAdding = false)
             }
         }
     }

@@ -22,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -59,7 +60,8 @@ import com.fiky.lofo_app.ui.theme.SurfaceContainerLow
 @Composable
 fun VoiceCommandModal(
     onDismiss: () -> Unit,
-    onSend: (text: String, connectItem: Boolean) -> Unit
+    onSend: (text: String, connectItem: Boolean) -> Unit,
+    isLoading: Boolean
 ) {
     var transcript by remember { mutableStateOf("") }
     var connectItem by remember { mutableStateOf(false) }
@@ -177,7 +179,7 @@ fun VoiceCommandModal(
                 colors = ButtonDefaults.buttonColors(containerColor = Primary),
                 enabled = transcript.isNotBlank() // Aktif jika ada teks
             ) {
-                Text("Kirim ke AI", color = OnPrimary)
+                if (isLoading) CircularProgressIndicator() else Text("Kirim ke AI", color = OnPrimary)
             }
         }
     }

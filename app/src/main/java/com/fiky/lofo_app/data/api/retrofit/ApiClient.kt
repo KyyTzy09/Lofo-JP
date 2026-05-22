@@ -23,7 +23,7 @@ object ApiClient {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl("http://192.168.1.2:8000/api/")
+            .baseUrl("http://192.168.137.232:8000/api/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

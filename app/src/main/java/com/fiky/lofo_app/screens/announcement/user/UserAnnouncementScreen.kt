@@ -139,7 +139,8 @@ fun UserAnnouncementScreen(
                             }
                         }
                     )
-                }
+                },
+                isLoading = viewModel.state.isAdding
             )
         }
 
