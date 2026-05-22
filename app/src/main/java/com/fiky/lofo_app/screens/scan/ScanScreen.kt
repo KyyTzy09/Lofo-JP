@@ -33,15 +33,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.FlashlightOn
-import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.QrCode2
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -54,6 +47,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,6 +67,9 @@ import androidx.core.content.ContextCompat
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import java.util.concurrent.Executors
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,6 +79,9 @@ fun ScanScreen(
     onBack: () -> Unit = {}
 ) {
     val state = controller.state
+
+    // PENGUNCI NAVIGASI: Mencegah navigasi dipicu berkali-kali secara simultan
+    var isScanned by remember { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -93,25 +93,24 @@ fun ScanScreen(
         permissionLauncher.launch(Manifest.permission.CAMERA)
     }
 
-    Scaffold() { paddingValues ->
+    Scaffold { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Camera Preview Layer
             if (state.isCameraPermissionGranted) {
                 CameraPreview(
                     onQrCodeScanned = { code ->
-                        controller.onQrCodeDetected(
-                            code,
-                            onSuccess = {
-                                onNavigateToDetail(code)
-                                        },
-                            onError = {
-                                onNavigateToDetail(code)
-                            }
-                        )
+                        // Hanya eksekusi jika belum sukses mendeteksi sebelumnya
+                        if (!isScanned) {
+                            isScanned = true
+                            controller.onQrCodeDetected(
+                                code,
+                                onSuccess = { onNavigateToDetail(code) },
+                                onError = { onNavigateToDetail(code) }
+                            )
+                        }
                     },
                     flashlightOn = state.isFlashlightOn
                 )
@@ -126,7 +125,7 @@ fun ScanScreen(
                 }
             }
 
-            // Scanning Overlay UI (Darkened background with transparent center)
+            // Layer Overlay Hitam Transparan
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -140,19 +139,15 @@ fun ScanScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // Viewfinder Frame
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f)
                         .clip(RoundedCornerShape(24.dp))
-                        .background(Color.Transparent), // Transparent center
+                        .background(Color.Transparent),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Corners Canvas
                     ScannerCorners()
-
-                    // Scanning Line
                     ScanningLine()
 
                     Icon(
@@ -168,7 +163,7 @@ fun ScanScreen(
                 Spacer(modifier = Modifier.height(48.dp))
 
                 Text(
-                    "Ready to Scan",
+                    text = if (isScanned) "Processing..." else "Ready to Scan",
                     style = MaterialTheme.typography.headlineSmall.copy(
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -187,6 +182,92 @@ fun ScanScreen(
     }
 }
 
+@Composable
+fun CameraPreview(
+    onQrCodeScanned: (String) -> Unit,
+    flashlightOn: Boolean
+) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    // Memastikan Executor dan PreviewView tidak dibuat ulang saat recomposition
+    val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+    val previewView = remember { PreviewView(context) }
+
+    // Menyimpan referensi cameraControl untuk flash toggle
+    val cameraControlState = remember { mutableStateOf<androidx.camera.core.CameraControl?>(null) }
+
+    // Efek Senter: Mengontrol flash secara dinamis tanpa re-bind CameraProvider
+    LaunchedEffect(flashlightOn) {
+        cameraControlState.value?.enableTorch(flashlightOn)
+    }
+
+    AndroidView(
+        factory = { previewView },
+        update = { _ ->
+            // Inisialisasi kamera hanya berjalan sekali saat pertama kali dipasang
+            val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+            cameraProviderFuture.addListener({
+                val cameraProvider = cameraProviderFuture.get()
+                val preview = Preview.Builder().build().also {
+                    it.setSurfaceProvider(previewView.surfaceProvider)
+                }
+
+                val imageAnalysis = ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build()
+                    .also {
+                        it.setAnalyzer(cameraExecutor) { imageProxy ->
+                            processImageProxy(imageProxy, onQrCodeScanned)
+                        }
+                    }
+
+                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+                try {
+                    cameraProvider.unbindAll()
+                    val camera = cameraProvider.bindToLifecycle(
+                        lifecycleOwner,
+                        cameraSelector,
+                        preview,
+                        imageAnalysis
+                    )
+                    // Simpan kontrol kamera untuk efek senter di atas
+                    cameraControlState.value = camera.cameraControl
+                    camera.cameraControl.enableTorch(flashlightOn)
+                } catch (exc: Exception) {
+                    exc.printStackTrace()
+                }
+            }, ContextCompat.getMainExecutor(context))
+        },
+        modifier = Modifier.fillMaxSize()
+    )
+}
+
+@androidx.annotation.OptIn(ExperimentalGetImage::class)
+private fun processImageProxy(
+    imageProxy: ImageProxy,
+    onQrCodeScanned: (String) -> Unit
+) {
+    val mediaImage = imageProxy.image
+    if (mediaImage != null) {
+        val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+        val scanner = BarcodeScanning.getClient()
+        scanner.process(image)
+            .addOnSuccessListener { barcodes ->
+                // Menggunakan break/return setelah barcode pertama didapat untuk efisiensi instan
+                val barcode = barcodes.firstOrNull()
+                barcode?.rawValue?.let { code ->
+                    onQrCodeScanned(code)
+                }
+            }
+            .addOnCompleteListener {
+                imageProxy.close()
+            }
+    } else {
+        imageProxy.close()
+    }
+}
 @Composable
 fun ScanActionButton(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
@@ -292,82 +373,5 @@ fun ScanningLine() {
                     )
                 )
         )
-    }
-}
-
-@Composable
-fun CameraPreview(
-    onQrCodeScanned: (String) -> Unit,
-    flashlightOn: Boolean
-) {
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
-
-    AndroidView(
-        factory = { ctx ->
-            val previewView = PreviewView(ctx)
-            val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
-            
-            cameraProviderFuture.addListener({
-                val cameraProvider = cameraProviderFuture.get()
-                val preview = Preview.Builder().build().also {
-                    it.setSurfaceProvider(previewView.surfaceProvider)
-                }
-
-                val imageAnalysis = ImageAnalysis.Builder()
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                    .build()
-                    .also {
-                        it.setAnalyzer(cameraExecutor) { imageProxy ->
-                            processImageProxy(imageProxy, onQrCodeScanned)
-                        }
-                    }
-
-                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-                try {
-                    cameraProvider.unbindAll()
-                    val camera = cameraProvider.bindToLifecycle(
-                        lifecycleOwner,
-                        cameraSelector,
-                        preview,
-                        imageAnalysis
-                    )
-                    camera.cameraControl.enableTorch(flashlightOn)
-                } catch (exc: Exception) {
-                    exc.printStackTrace()
-                }
-            }, ContextCompat.getMainExecutor(ctx))
-            
-            previewView
-        },
-        modifier = Modifier.fillMaxSize()
-    )
-}
-
-@androidx.annotation.OptIn(ExperimentalGetImage::class)
-private fun processImageProxy(
-    imageProxy: ImageProxy,
-    onQrCodeScanned: (String) -> Unit
-) {
-    @androidx.camera.core.ExperimentalGetImage
-    val mediaImage = imageProxy.image
-    if (mediaImage != null) {
-        val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-        val scanner = BarcodeScanning.getClient()
-        scanner.process(image)
-            .addOnSuccessListener { barcodes ->
-                for (barcode in barcodes) {
-                    barcode.rawValue?.let { code ->
-                        onQrCodeScanned(code)
-                    }
-                }
-            }
-            .addOnCompleteListener {
-                imageProxy.close()
-            }
-    } else {
-        imageProxy.close()
     }
 }
