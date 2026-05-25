@@ -147,14 +147,13 @@ fun AnnouncementDetailScreen(
                     ) {
                         AsyncImage(
                             model = ImageRequest.Builder(context)
-                                .data(state.announcement.user?.profile?.avatar ?: "https://via.placeholder.com/150")
-                                .decoderFactory(SvgDecoder.Factory()) // <--- INI KUNCINYA
+                                .data(state.announcement.item.image)
+                                .decoderFactory(SvgDecoder.Factory())
                                 .crossfade(true)
                                 .build(),
                             contentDescription = "Avatar User",
                             modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape),
+                                .fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
 
@@ -249,10 +248,15 @@ fun AnnouncementDetailScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 AsyncImage(
-                                    model = data.user.profile?.avatar?: "https://i.pinimg.com/736x/8b/16/7a/8b167af653c2399dd93b952a48740620.jpg",
+                                    model = ImageRequest.Builder(context)
+                                        .data(state.announcement.user.profile?.avatar ?: "")
+                                        .decoderFactory(SvgDecoder.Factory())
+                                        .crossfade(true)
+                                        .build(),
                                     contentDescription = null,
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Crop
+
                                 )
                             }
 
@@ -260,7 +264,7 @@ fun AnnouncementDetailScreen(
 
                             Column(Modifier.weight(1f)) {
                                 Text(
-                                    text = data.user.profile?.username ?: "Anonymous User",
+                                    text = if (isOwner) "Anda" else data.user.profile?.username ?: "Anonymous User",
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.primary
                                 )

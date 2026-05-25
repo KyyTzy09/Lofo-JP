@@ -69,16 +69,17 @@ import com.google.mlkit.vision.common.InputImage
 import java.util.concurrent.Executors
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanScreen(
-    controller: ScanController = rememberScanController(),
+    viewModel: ScanViewModel = viewModel(),
     onNavigateToDetail: (String) -> Unit = {},
     onBack: () -> Unit = {}
 ) {
-    val state = controller.state
+    val state =viewModel.state
 
     // PENGUNCI NAVIGASI: Mencegah navigasi dipicu berkali-kali secara simultan
     var isScanned by remember { mutableStateOf(false) }
@@ -86,11 +87,26 @@ fun ScanScreen(
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        controller.updatePermission(isGranted)
+        viewModel.updatePermission(isGranted)
     }
 
     LaunchedEffect(Unit) {
         permissionLauncher.launch(Manifest.permission.CAMERA)
+    }
+
+    val context = LocalContext.current
+
+    val onQrScannedFromCamera = { qrCode: String ->
+        viewModel.onQrCodeDetected(
+            context = context,
+            code = qrCode,
+            onCodeScanned = { code, lat, lon ->
+                onNavigateToDetail(code)
+            },
+            onError = { errorMessage ->
+                println("Log Error: $errorMessage")
+            }
+        )
     }
 
     Scaffold { paddingValues ->
@@ -105,11 +121,7 @@ fun ScanScreen(
                         // Hanya eksekusi jika belum sukses mendeteksi sebelumnya
                         if (!isScanned) {
                             isScanned = true
-                            controller.onQrCodeDetected(
-                                code,
-                                onSuccess = { onNavigateToDetail(code) },
-                                onError = { onNavigateToDetail(code) }
-                            )
+                            onQrScannedFromCamera(code)
                         }
                     },
                     flashlightOn = state.isFlashlightOn
