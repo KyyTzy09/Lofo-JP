@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#121212</item>
 
-    <style name="Theme.LoFo_App" parent="android:Theme.Material.Light.NoActionBar" />
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+
+        <item name="postSplashScreenTheme">@style/Theme.LoFo</item>
+    </style>
+
+    <style name="Theme.LoFo" parent="android:Theme.Material.NoActionBar" />
 </resources>

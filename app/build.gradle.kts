@@ -40,12 +40,16 @@ android {
 }
 
 dependencies {
+//  Compose
     implementation("io.coil-kt:coil-compose:2.6.0") // Library utama
     implementation("io.coil-kt:coil-svg:2.6.0")    // TAMBAHKAN INI agar bisa render SVG
 //    Map
     implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation("org.osmdroid:osmdroid-android:6.1.18")
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+//  Theme
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
 //    DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
