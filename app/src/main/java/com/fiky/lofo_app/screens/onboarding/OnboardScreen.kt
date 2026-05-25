@@ -45,7 +45,7 @@ fun OnboardingScreen(
     val scope = rememberCoroutineScope()
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             Row(
                 modifier = Modifier
