@@ -30,25 +30,33 @@ class ScanController (
             .setPriority(Priority.PRIORITY_HIGH_ACCURACY) // Memaksa akurasi tinggi (GPS)
             .build()
 
-        if (state.lastScannedCode != code) {
-            state.lastScannedCode = code
+        try {
+            if (state.lastScannedCode != code) {
+                state.lastScannedCode = code
 
 
-            fusedLocationClient.getCurrentLocation(locationRequest, null)
-                .addOnSuccessListener { location ->
-                    if (location != null) {
-                        onCodeScanned(code, location.latitude, location.longitude)
-                        updateItemLocation(code, location.latitude, location.longitude, onSuccess, onError)
-                    } else {
-                        // Kemungkinan null di sini sangat kecil, kecuali GPS HP mati total
-                        onCodeScanned(code, null, null)
-                        onSuccess()
+                fusedLocationClient.getCurrentLocation(locationRequest, null)
+                    .addOnSuccessListener { location ->
+                        if (location != null) {
+                            onCodeScanned(code, location.latitude, location.longitude)
+                            updateItemLocationInBackground(
+                                code,
+                                location.latitude,
+                                location.longitude
+                            )
+                        } else {
+                            // Kemungkinan null di sini sangat kecil, kecuali GPS HP mati total
+                            onCodeScanned(code, null, null)
+                            onSuccess()
+                        }
                     }
-                }
-                .addOnFailureListener { exception ->
-                    onCodeScanned(code, null, null)
-                    onError(exception.localizedMessage ?: "Gagal mendeteksi lokasi")
-                }
+                    .addOnFailureListener { exception ->
+                        onCodeScanned(code, null, null)
+                        onError(exception.localizedMessage ?: "Gagal mendeteksi lokasi")
+                    }
+            }
+        } catch (e: Exception) {
+            onError(e.localizedMessage ?: "Gagal mendeteksi lokasi")
         }
     }
 
@@ -61,6 +69,19 @@ class ScanController (
                 onSuccess()
             } catch (e: Exception) {
                 onError(e.localizedMessage ?: "Gagal memperbarui lokasi")
+            }
+        }
+    }
+
+    private fun updateItemLocationInBackground(itemId: String, lat: Double, lon: Double) {
+        scope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    itemRepo.UpdateItemLocation(itemId, lat, lon)
+                }
+                println("Log: Berhasil memperbarui lokasi di background.")
+            } catch (e: Exception) {
+                println("Log Error: ${e.localizedMessage}")
             }
         }
     }
