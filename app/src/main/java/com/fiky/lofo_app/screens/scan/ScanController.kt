@@ -2,86 +2,76 @@ package com.fiky.lofo_app.screens.scan
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.fiky.lofo_app.data.api.repositories.ItemRepository
 import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ScanController (
-    val state: ScanState,
-    private val onCodeScanned: (String, Double?, Double?) -> Unit,
-    private val fusedLocationClient: FusedLocationProviderClient,
-    private val scope: CoroutineScope
-) {
+class ScanViewModel : ViewModel() {
+    val state = ScanState()
     private val itemRepo: ItemRepository = ItemRepository()
 
     @SuppressLint("MissingPermission")
-    fun onQrCodeDetected(code: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun onQrCodeDetected(
+        context: Context,
+        code: String,
+        onCodeScanned: (String, Double?, Double?) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         val locationRequest = CurrentLocationRequest.Builder()
-            .setPriority(Priority.PRIORITY_HIGH_ACCURACY) // Memaksa akurasi tinggi (GPS)
+            .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
             .build()
 
-        if (state.lastScannedCode != code) {
-            state.lastScannedCode = code
+        try {
+            if (state.lastScannedCode != code) {
+                state.lastScannedCode = code
 
-
-            fusedLocationClient.getCurrentLocation(locationRequest, null)
-                .addOnSuccessListener { location ->
-                    if (location != null) {
-                        onCodeScanned(code, location.latitude, location.longitude)
-                        updateItemLocation(code, location.latitude, location.longitude, onSuccess, onError)
-                    } else {
-                        // Kemungkinan null di sini sangat kecil, kecuali GPS HP mati total
-                        onCodeScanned(code, null, null)
-                        onSuccess()
+                fusedLocationClient.getCurrentLocation(locationRequest, null)
+                    .addOnSuccessListener { location ->
+                        if (location != null) {
+                            // 1. Langsung picu redirect di UI
+                            onCodeScanned(code, location.latitude, location.longitude)
+                            // 2. Jalankan proses update di background coroutine milik ViewModel
+                            updateItemLocationInBackground(code, location.latitude, location.longitude)
+                        } else {
+                            onCodeScanned(code, null, null)
+                        }
                     }
-                }
-                .addOnFailureListener { exception ->
-                    onCodeScanned(code, null, null)
-                    onError(exception.localizedMessage ?: "Gagal mendeteksi lokasi")
-                }
+                    .addOnFailureListener { exception ->
+                        onCodeScanned(code, null, null)
+                        onError(exception.localizedMessage ?: "Gagal mendeteksi lokasi")
+                    }
+            }
+        } catch (e: Exception) {
+            onError(e.localizedMessage ?: "Gagal mendeteksi lokasi")
         }
     }
 
-    fun updateItemLocation(itemId: String, lat: Double, lon: Double, onSuccess: () -> Unit, onError: (String) -> Unit) {
-        scope.launch {
+    private fun updateItemLocationInBackground(itemId: String, lat: Double, lon: Double) {
+        // Menggunakan viewModelScope bawaan ViewModel Architecture Component
+        viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
                     itemRepo.UpdateItemLocation(itemId, lat, lon)
                 }
-                onSuccess()
+                println("Log: Berhasil memperbarui lokasi di background via ViewModel.")
             } catch (e: Exception) {
-                onError(e.localizedMessage ?: "Gagal memperbarui lokasi")
+                println("Log Error: ${e.localizedMessage}")
             }
         }
     }
 
     fun updatePermission(isGranted: Boolean) {
         state.isCameraPermissionGranted = isGranted
-    }
-}
-
-@Composable
-fun rememberScanController(
-    context: Context = LocalContext.current,
-    state: ScanState = remember { ScanState() },
-    onCodeScanned: (String, Double?, Double?) -> Unit = { _, _, _ -> }
-): ScanController {
-    val fusedLocationClient = remember {
-        LocationServices.getFusedLocationProviderClient(context)
-    }
-    val scope = rememberCoroutineScope()
-
-    return remember(state, fusedLocationClient) {
-        ScanController(state, onCodeScanned, fusedLocationClient, scope)
     }
 }

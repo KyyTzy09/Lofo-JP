@@ -53,7 +53,8 @@ fun CustomTextField(
             focusedContainerColor = MaterialTheme.colorScheme.surface,
             unfocusedBorderColor = Color.Transparent,
             focusedBorderColor = MaterialTheme.colorScheme.primary,
-            focusedLeadingIconColor = MaterialTheme.colorScheme.primary
+            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+            unfocusedTextColor = MaterialTheme.colorScheme.outline,
         )
     )
 }

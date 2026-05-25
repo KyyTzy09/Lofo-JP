@@ -50,13 +50,28 @@ fun UserAnnouncementCard(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                AsyncImage(
-                    model = announcement.item?.image ?: "https://via.placeholder.com/300",
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
+            Box(modifier = Modifier.weight(0.2f).fillMaxSize()) {
+                if (announcement.item != null) {
+                    AsyncImage(
+                        model = announcement.item.image,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop, // <-- UBAH DI SINI dari Fit ke Crop
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(12.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "No Image",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
                 Surface(
                     modifier = Modifier.padding(12.dp),
                     shape = CircleShape,
@@ -79,7 +94,7 @@ fun UserAnnouncementCard(
                     announcement.title,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     maxLines = 1,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {

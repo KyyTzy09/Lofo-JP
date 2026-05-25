@@ -9,12 +9,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MicOff
 import androidx.compose.material3.BottomSheetDefaults
@@ -26,8 +30,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
@@ -40,21 +46,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.fiky.lofo_app.ui.theme.Error
-import com.fiky.lofo_app.ui.theme.OnPrimary
-import com.fiky.lofo_app.ui.theme.OnSurface
-import com.fiky.lofo_app.ui.theme.OnSurfaceVariant
-import com.fiky.lofo_app.ui.theme.Outline
-import com.fiky.lofo_app.ui.theme.OutlineVariant
-import com.fiky.lofo_app.ui.theme.Primary
-import com.fiky.lofo_app.ui.theme.PrimaryContainer
-import com.fiky.lofo_app.ui.theme.SurfaceContainer
-import com.fiky.lofo_app.ui.theme.SurfaceContainerHigh
-import com.fiky.lofo_app.ui.theme.SurfaceContainerLow
+import com.fiky.lofo_app.ui.theme.*
+import com.fiky.lofo_app.utils.TextLimiter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,18 +65,23 @@ fun VoiceCommandModal(
 ) {
     var transcript by remember { mutableStateOf("") }
     var connectItem by remember { mutableStateOf(false) }
-    val context = LocalContext.current
 
-    // Inisialisasi parser dan langsung pasang callback-nya di sini
+    val wordCount = if (transcript.isBlank()) 0 else transcript.trim().split(Regex("\\s+")).size
+    val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+    val scrollState = rememberScrollState() // State untuk handle scroll kontainer form
+
     val parser = remember {
         VoiceToTextParser(context).apply {
             onResultCallback = { newVoiceText ->
-                // AKUMULASI: Tambahkan hasil suara ke teks yang sudah ada (atau yang sudah diketik)
-                transcript = if (transcript.isEmpty()) {
+                val combinedText = if (transcript.isEmpty()) {
                     newVoiceText
                 } else {
                     "$transcript $newVoiceText"
                 }
+
+                transcript = TextLimiter(combinedText)
             }
         }
     }
@@ -86,27 +91,48 @@ fun VoiceCommandModal(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         containerColor = SurfaceContainer,
-        dragHandle = { BottomSheetDefaults.DragHandle(color = Outline) }
+        dragHandle = { BottomSheetDefaults.DragHandle(color = Outline) },
+        // JURUS KUNCI: Matikan dismiss bawaan tombol back di sini
+        properties = ModalBottomSheetProperties(
+            shouldDismissOnBackPress = false
+        )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp),
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 32.dp)
+                .verticalScroll(scrollState), // MEMBUAT MODAL BISA DI-SCROLL
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Header & Instruction
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            // Header Section dengan Tombol Tutup (X)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(Icons.Default.Mic, contentDescription = null, tint = Primary)
                 Spacer(Modifier.width(8.dp))
-                Text("AI Voice Announcement", color = OnSurface, style = MaterialTheme.typography.titleMedium)
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("AI Voice Announcement", color = OnSurface, style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        "Ucapkan detail atau ketik manual",
+                        color = OnSurfaceVariant,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                // Tombol Close (X) eksklusif sebagai pengganti back press
+                IconButton(
+                    onClick = {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                        onDismiss()
+                    }
+                ) {
+                    Icon(Icons.Default.Close, contentDescription = "Close", tint = OnSurfaceVariant)
+                }
             }
-            Text(
-                "Ucapkan detail atau ketik manual",
-                color = OnSurfaceVariant,
-                style = MaterialTheme.typography.bodySmall
-            )
 
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(24.dp))
 
             // Mic Button
             Box(contentAlignment = Alignment.Center) {
@@ -127,11 +153,11 @@ fun VoiceCommandModal(
 
             Spacer(Modifier.height(24.dp))
 
-            // 3. Transcript Box (Sekarang Editable)
+            // Transcript Box (Editable)
             OutlinedTextField(
-                value = transcript, // Gunakan state lokal
+                value = transcript,
                 onValueChange = { newValue ->
-                    transcript = newValue // Sekarang user bisa ngetik/edit di sini
+                    transcript = TextLimiter(newValue)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -140,13 +166,37 @@ fun VoiceCommandModal(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = SurfaceContainerLow,
                     unfocusedContainerColor = SurfaceContainerLow,
-                    focusedBorderColor = Primary, // Beri warna saat diedit agar jelas
+                    focusedBorderColor = Primary,
                     unfocusedBorderColor = OutlineVariant,
                     focusedTextColor = OnSurface,
                     unfocusedTextColor = OnSurface
                 ),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    }
+                )
             )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "$wordCount / 200 kata",
+                    color = if (wordCount >= 200) Error else OnSurfaceVariant,
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.End
+                )
+            }
 
             Spacer(Modifier.height(16.dp))
 
@@ -174,10 +224,16 @@ fun VoiceCommandModal(
 
             // Action Buttons
             Button(
-                onClick = { onSend(transcript, connectItem) },
-                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                    onSend(transcript, connectItem)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Primary),
-                enabled = transcript.isNotBlank() // Aktif jika ada teks
+                enabled = transcript.isNotBlank()
             ) {
                 if (isLoading) CircularProgressIndicator() else Text("Kirim ke AI", color = OnPrimary)
             }

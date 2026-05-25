@@ -141,21 +141,21 @@ fun CreateAnnouncementScreen(
                 .padding(horizontal = 20.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Header Section - Lebih Simple & Modern
-            Text(
-                "Buat Pengumuman",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                "Lengkapi detail barang untuk mempercepat proses penemuan.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
+//
+//            // Header Section - Lebih Simple & Modern
+//            Text(
+//                "Buat Pengumuman",
+//                style = MaterialTheme.typography.headlineMedium,
+//                fontWeight = FontWeight.ExtraBold,
+//                color = MaterialTheme.colorScheme.onBackground
+//            )
+//            Text(
+//                "Lengkapi detail barang untuk mempercepat proses penemuan.",
+//                style = MaterialTheme.typography.bodyMedium,
+//                color = MaterialTheme.colorScheme.onSurfaceVariant
+//            )
+//
+//            Spacer(modifier = Modifier.height(32.dp))
 
             // Main Form Container
             Surface(
@@ -168,6 +168,27 @@ fun CreateAnnouncementScreen(
                     modifier = Modifier.padding(20.dp),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(56.dp)
+                                .background(MaterialTheme.colorScheme.surfaceContainer, shape = RoundedCornerShape(16.dp)),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(Icons.Default.Announcement, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(48.dp))
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            "Buat Pengumuman",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
                     // --- INPUT FIELD: JUDUL ---
                     AnnouncementTextField(
                         label = "Judul",
