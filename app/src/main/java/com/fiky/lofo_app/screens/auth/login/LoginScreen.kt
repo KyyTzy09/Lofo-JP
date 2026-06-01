@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -55,6 +56,7 @@ fun LoginScreen(
     val scope = rememberCoroutineScope()
     val state = viewModel.state
     val scrollState = rememberScrollState()
+    var context = LocalContext.current
 
     Column(
         modifier = modifier
@@ -143,12 +145,15 @@ fun LoginScreen(
                 // CTA Button (Menggunakan warna primary solid agar serasi dengan top background)
                 Button(
                     onClick = {
-                        viewModel.login {
-                            scope.launch {
-                                ToastHelper.show(snackbarHostState, "Sukses", "Login Berhasil!", ToastType.SUCCESS)
+                        viewModel.login(
+                            context,
+                            onSuccess = {
+                                scope.launch {
+                                    ToastHelper.show(snackbarHostState, "Sukses", "Login Berhasil!", ToastType.SUCCESS)
+                                }
+                                onLoginSuccess()
                             }
-                            onLoginSuccess()
-                        }
+                        )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
