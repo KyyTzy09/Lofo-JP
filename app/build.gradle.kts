@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -47,6 +48,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation("org.osmdroid:osmdroid-android:6.1.18")
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+//  Firebase
+    implementation("com.google.firebase:firebase-messaging-ktx:24.0.0")
 //  Theme
     implementation("androidx.core:core-splashscreen:1.0.1")
 

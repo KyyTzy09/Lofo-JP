@@ -19,4 +19,8 @@ object ApiService {
     val announcementService: AnnouncementService by lazy {
         ApiClient.create(MyApp.instance).create(AnnouncementService::class.java)
     }
+
+    val deviceTokenService: DeviceTokenService by lazy {
+        ApiClient.create(MyApp.instance).create(DeviceTokenService::class.java)
+    }
 }

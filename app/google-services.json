@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1073625496327",
+    "project_id": "lofo-app-d785c",
+    "storage_bucket": "lofo-app-d785c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073625496327:android:8804c14dfad500ffb363a2",
+        "android_client_info": {
+          "package_name": "com.fiky.lofo_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAydgg13CmaaF5YbyqiQF3K-oKRrQbrrhU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
