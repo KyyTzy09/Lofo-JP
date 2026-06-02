@@ -94,7 +94,29 @@ fun CreateAnnouncementScreen(
             confirmButton = {
                 TextButton(onClick = {
                     val formattedTime = String.format("%02d:%02d", timePickerState.hour, timePickerState.minute)
-                    viewModel.onDateChange("$tempDate $formattedTime") // Gabungkan Tanggal + Jam
+
+                    // 1. Ambil tanggal dan jam lokal gabungan
+                    val localDateTimeString = "$tempDate $formattedTime" // Hasilnya: "30/04/2026 15:30"
+
+                    try {
+                        // 2. Parse string lokal menggunakan format bawaan hp kamu (asumsi WIB/WITA/WIT lokal)
+                        val localFormat = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
+                        val localDate = localFormat.parse(localDateTimeString)
+
+                        // 3. Konversi objek date tersebut ke standard ISO 8601 UTC murni
+                        val utcFormat = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US).apply {
+                            timeZone = java.util.TimeZone.getTimeZone("UTC")
+                        }
+                        val utcDateString = utcFormat.format(localDate!!) // Hasilnya: "2026-04-30T08:30:00Z" (Otomatis ke-convert ke UTC)
+
+                        // 4. Set ke state yang akan dikirim ke Retrofit API Laravel
+                        viewModel.onDateChange(utcDateString)
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        viewModel.onDateChange(localDateTimeString) // fallback jika gagal parse
+                    }
+
                     showTimePicker = false
                 }) { Text("Selesai") }
             },
