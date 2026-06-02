@@ -6,12 +6,14 @@ import androidx.compose.runtime.getValue
 import com.fiky.lofo_app.data.api.repositories.UserRepository
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fiky.lofo_app.data.api.repositories.ItemRepository
 import com.fiky.lofo_app.data.models.ItemModel
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 class UserItemViewModel : ViewModel() {
     private val userRepo: UserRepository = UserRepository()
+    private val itemRepo: ItemRepository = ItemRepository()
     var state by mutableStateOf(ItemUserState())
         private set
 
@@ -33,6 +35,21 @@ class UserItemViewModel : ViewModel() {
                 state = state.copy(error = errorMessage)
             } catch (e: Exception) {
                 state = state.copy(error = e.localizedMessage ?: "Terjadi kesalahan")
+            } finally {
+                state = state.copy(isLoading = false)
+            }
+        }
+    }
+
+    fun deleteItem(itemId: String, onDeleteSuccess: () -> Unit) {
+        viewModelScope.launch {
+            state = state.copy(isLoading = true, error = null)
+            try {
+                itemRepo.DeleteItem(itemId)
+                state = state.copy(items = state.items.filter { it.itemId != itemId })
+                onDeleteSuccess()
+            } catch (e: Exception) {
+                state = state.copy(error = e.localizedMessage ?: "Gagal menghapus barang")
             } finally {
                 state = state.copy(isLoading = false)
             }

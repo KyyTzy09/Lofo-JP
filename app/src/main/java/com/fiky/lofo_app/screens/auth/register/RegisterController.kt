@@ -38,17 +38,20 @@ class RegisterViewModel: ViewModel() {
 
     fun register(onSuccess: () -> Unit) {
         viewModelScope.launch {
+            // 1. Validasi Lokal (Hadang di awal tanpa memicu try-catch)
+            if (state.username.isBlank() || state.password.isBlank() || state.phoneNumber.isBlank()) {
+                state = state.copy(error = "Field wajib diisi")
+                return@launch // Stop proses di sini, gak usah lanjut ke bawah
+            }
+
+            if (!state.agreeTerms) {
+                state = state.copy(error = "Anda harus menyetujui syarat dan ketentuan")
+                return@launch // Stop proses juga
+            }
+
+            // 2. Jika validasi lolos, baru jalankan block network request yang rawan crash
             state = state.copy(isLoading = true, error = null)
-
             try {
-                if (state.username.isBlank() || state.password.isBlank() || state.phoneNumber.isBlank()) {
-                    throw Exception("Field wajib diisi")
-                }
-
-                if (!state.agreeTerms) {
-                    throw Exception("Anda harus menyetujui syarat dan ketentuan")
-                }
-
                 authRepo.register(state.username, state.phoneNumber, state.password, state.address)
                 onSuccess()
             } catch (e: retrofit2.HttpException) {
@@ -60,6 +63,9 @@ class RegisterViewModel: ViewModel() {
                     "Terjadi kesalahan"
                 }
                 state = state.copy(error = errorMessage)
+            } catch (e: Exception) {
+                // Berjaga-jaga kalau ada error network / IO biasa selain HTTP error
+                state = state.copy(error = e.localizedMessage ?: "Terjadi kesalahan jaringan")
             } finally {
                 state = state.copy(isLoading = false)
             }
