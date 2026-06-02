@@ -1,16 +1,7 @@
 package com.fiky.lofo_app.screens.voice
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,40 +10,22 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MicOff
-import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ModalBottomSheetProperties
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.fiky.lofo_app.ui.theme.*
 import com.fiky.lofo_app.utils.TextLimiter
 
@@ -70,7 +43,7 @@ fun VoiceCommandModal(
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-    val scrollState = rememberScrollState() // State untuk handle scroll kontainer form
+    val scrollState = rememberScrollState()
 
     val parser = remember {
         VoiceToTextParser(context).apply {
@@ -80,7 +53,6 @@ fun VoiceCommandModal(
                 } else {
                     "$transcript $newVoiceText"
                 }
-
                 transcript = TextLimiter(combinedText)
             }
         }
@@ -92,7 +64,6 @@ fun VoiceCommandModal(
         onDismissRequest = onDismiss,
         containerColor = SurfaceContainer,
         dragHandle = { BottomSheetDefaults.DragHandle(color = Outline) },
-        // JURUS KUNCI: Matikan dismiss bawaan tombol back di sini
         properties = ModalBottomSheetProperties(
             shouldDismissOnBackPress = false
         )
@@ -102,10 +73,10 @@ fun VoiceCommandModal(
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
                 .padding(bottom = 32.dp)
-                .verticalScroll(scrollState), // MEMBUAT MODAL BISA DI-SCROLL
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Header Section dengan Tombol Tutup (X)
+            // Header Section
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -113,14 +84,13 @@ fun VoiceCommandModal(
                 Icon(Icons.Default.Mic, contentDescription = null, tint = Primary)
                 Spacer(Modifier.width(8.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("AI Voice Announcement", color = OnSurface, style = MaterialTheme.typography.titleMedium)
+                    Text("AI Voice Announcement", color = OnSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                     Text(
                         "Ucapkan detail atau ketik manual",
                         color = OnSurfaceVariant,
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
-                // Tombol Close (X) eksklusif sebagai pengganti back press
                 IconButton(
                     onClick = {
                         keyboardController?.hide()
@@ -132,7 +102,7 @@ fun VoiceCommandModal(
                 }
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(20.dp))
 
             // Mic Button
             Box(contentAlignment = Alignment.Center) {
@@ -141,17 +111,70 @@ fun VoiceCommandModal(
                         if (state.isListening) parser.stopListening() else parser.startListening()
                     },
                     containerColor = if (state.isListening) Error else Primary,
-                    shape = CircleShape
+                    shape = CircleShape,
+                    modifier = Modifier.size(64.dp)
                 ) {
                     Icon(
                         if (state.isListening) Icons.Default.MicOff else Icons.Default.Mic,
                         contentDescription = null,
-                        tint = OnPrimary
+                        tint = OnPrimary,
+                        modifier = Modifier.size(28.dp)
                     )
                 }
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(20.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = null,
+                            tint = Primary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Petunjuk Format Suara AI",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = OnSurface
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Sebutkan nama barang, lokasi, serta tanggal dan jam kehilangan secara jelas. Jika barang sudah pernah di-upload, centang opsi di bawah agar AI otomatis menghubungkannya.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = OnSurfaceVariant,
+                        lineHeight = 16.sp
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = "Contoh Ucapan:",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = Primary
+                    )
+                    Text(
+                        text = "\"Buatkan saya announcement dengan judul Tws Soundcore R50i, hubungkan dengan item tws soundcore R50i saya, saya kehilangan hari selasa 12 mei 2026 jam 13:00 di ruangan B 1.2\"",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontStyle = FontStyle.Italic,
+                        color = OnSurface.copy(alpha = 0.8f),
+                        lineHeight = 18.sp,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(20.dp))
 
             // Transcript Box (Editable)
             OutlinedTextField(
@@ -182,18 +205,14 @@ fun VoiceCommandModal(
             )
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "$wordCount / 200 kata",
                     color = if (wordCount >= 200) Error else OnSurfaceVariant,
                     style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     textAlign = androidx.compose.ui.text.style.TextAlign.End
                 )
             }
@@ -201,7 +220,7 @@ fun VoiceCommandModal(
             Spacer(Modifier.height(16.dp))
 
             // Option: Connect Item
-            Surface (
+            Surface(
                 onClick = { connectItem = !connectItem },
                 color = if (connectItem) PrimaryContainer else SurfaceContainerHigh,
                 shape = RoundedCornerShape(12.dp),
@@ -216,7 +235,10 @@ fun VoiceCommandModal(
                         onCheckedChange = { connectItem = it },
                         colors = CheckboxDefaults.colors(checkedColor = Primary)
                     )
-                    Text("Hubungkan dengan item saya?", color = OnSurface)
+                    Column {
+                        Text("Hubungkan dengan item saya?", color = OnSurface, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)
+                        Text("Aktifkan jika barang fisik ini sudah memiliki QR Code terdaftar", color = OnSurfaceVariant, style = MaterialTheme.typography.labelSmall)
+                    }
                 }
             }
 
@@ -231,11 +253,20 @@ fun VoiceCommandModal(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
+                    .height(54.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Primary),
-                enabled = transcript.isNotBlank()
+                shape = RoundedCornerShape(14.dp),
+                enabled = transcript.isNotBlank() && !isLoading
             ) {
-                if (isLoading) CircularProgressIndicator() else Text("Kirim ke AI", color = OnPrimary)
+                if (isLoading) {
+                    CircularProgressIndicator(color = OnPrimary, modifier = Modifier.size(24.dp))
+                } else {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Kirim ke AI Cerdas", color = OnPrimary, fontWeight = FontWeight.Bold)
+                        Spacer(Modifier.width(8.dp))
+                        Icon(Icons.Default.Send, contentDescription = null, modifier = Modifier.size(16.dp))
+                    }
+                }
             }
         }
     }
