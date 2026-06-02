@@ -1,25 +1,19 @@
 package com.fiky.lofo_app.screens.item.user
 
+
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import com.fiky.lofo_app.data.models.ItemModel
 import com.fiky.lofo_app.data.models.ItemStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,18 +26,72 @@ fun UserItemScreen(
 ) {
     val state = viewModel.state
 
+    // --- STATE BARU UNTUK KONFIRMASI DELETE ---
+    var itemToDeleteId by remember { mutableStateOf<String?>(null) }
+    val showDeleteDialog = remember(itemToDeleteId) { itemToDeleteId != null }
+
     LaunchedEffect(Unit) {
         viewModel.fetchUserItems()
     }
 
+    // --- DIALOG KONFIRMASI (MODAL) ---
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { itemToDeleteId = null }, // Tutup modal jika klik luar
+            icon = { Icon(Icons.Default.DeleteForever, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
+            title = {
+                Text(
+                    text = "Hapus Barang?",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            },
+            text = {
+                Text(
+                    text = "Apakah Anda yakin ingin menghapus barang ini? Tindakan ini tidak dapat dibatalkan.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        itemToDeleteId?.let { id ->
+                            // Panggil fungsi delete di viewModel kamu
+                            viewModel.deleteItem(
+                                itemId = id,
+                                onDeleteSuccess = {
+                                    // Setelah sukses, tutup modal
+                                    itemToDeleteId = null
+                                }
+                            )
+                        }
+                        itemToDeleteId = null // Tutup modal setelah sukses trigger
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Hapus", color = MaterialTheme.colorScheme.onError)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { itemToDeleteId = null }
+                ) {
+                    Text("Batal")
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(28.dp)
+        )
+    }
+
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background, // Pakai background gelap
+        containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddItem,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape = RoundedCornerShape(16.dp), // Lebih modern dari Circle
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.padding(bottom = 80.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Item")
@@ -51,7 +99,7 @@ fun UserItemScreen(
         },
     ) { paddingValues ->
         LazyVerticalGrid(
-            columns = GridCells.Fixed(1), // Ubah ke 2 kolom biar padet!
+            columns = GridCells.Fixed(1), // Bisa kamu ubah ke 2 kolom nanti sesuai komentar kodenmu
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
@@ -65,21 +113,19 @@ fun UserItemScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // --- HEADER SECTION ---
-            // Di dalam UserItemScreen (Header Section)
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Column(modifier = Modifier.padding(bottom = 8.dp)) {
                     Text(
                         text = "Barang Saya",
-                        fontSize = 32.sp, // Ukuran lebih besar agar dominan
+                        fontSize = 32.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.onBackground // Pastikan kontras dengan background gelap
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Stats Section (Ganti warna biar nggak kusam)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Surface(
-                            color = MaterialTheme.colorScheme.primaryContainer, // Ungu terang (Dark Mode)
+                            color = MaterialTheme.colorScheme.primaryContainer,
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text(
@@ -91,7 +137,7 @@ fun UserItemScreen(
                             )
                         }
 
-                        // Tambahkan indicator barang hilang (biar kelihatan penting)
+                        // Indicator barang hilang
                         val lostCount = state.items.count { it.status == ItemStatus.HILANG }
                         if (lostCount > 0) {
                             Surface(
@@ -127,12 +173,14 @@ fun UserItemScreen(
                     item = item,
                     onCardClick = { onNavigateToDetail(item.itemId) },
                     onUpdate = onUpdateItem,
-                    onDelete = { /* Delete Placeholder */ }
-                    )
+                    // LANGKAH CERDIK: Titipkan id barang ke state saat tombol tong sampah diklik
+                    onDelete = { itemToDeleteId = item.itemId }
+                )
             }
         }
     }
 }
+
 
 @Composable
 fun StatChip(label: String, count: String, selected: Boolean) {
