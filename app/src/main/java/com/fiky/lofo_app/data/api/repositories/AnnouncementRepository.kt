@@ -9,6 +9,7 @@ import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementWithVoiceRe
 import com.fiky.lofo_app.data.api.dto.announcement.PendingAnnouncements
 import com.fiky.lofo_app.data.api.dto.announcement.UpdateAnnouncementRequest
 import com.fiky.lofo_app.data.api.dto.announcement.UpdateAnnouncementResponse
+import com.fiky.lofo_app.data.api.dto.announcement.UpdateAnnouncementStatusRequest
 import com.fiky.lofo_app.data.api.services.ApiService
 
 class AnnouncementRepository {
@@ -33,8 +34,13 @@ class AnnouncementRepository {
     }
 
     suspend fun UpdateAnnouncement(id: String, announcementDto: UpdateAnnouncementRequest): UpdateAnnouncementResponse {
+        return ApiService.announcementService.updateAnnouncement(id, announcementDto)
+    }
+
+    suspend fun UpdateAnnouncementStatus(id: String, announcementDto: UpdateAnnouncementStatusRequest): UpdateAnnouncementResponse {
         return ApiService.announcementService.updateAnnouncementStatus(id, announcementDto)
     }
+
 
     suspend fun DeleteAnnouncement(id: String): AnnouncementDetail {
         return ApiService.announcementService.deleteAnnouncement(id)

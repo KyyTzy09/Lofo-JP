@@ -23,7 +23,7 @@ object ApiClient {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl("https://lofo-api.my.id/api/")
+            .baseUrl("http://192.168.18.72:8000/api/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

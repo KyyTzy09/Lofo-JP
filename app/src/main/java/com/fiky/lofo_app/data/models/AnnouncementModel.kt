@@ -8,6 +8,8 @@ data class AnnouncementModel(
     val description: String,
     val location: String,
     val status: AnnouncementStatus,
+    @SerializedName("lost_at")
+    val lostAt: String,
     @SerializedName("user_id")
     val userId: String,
     @SerializedName("item_id")

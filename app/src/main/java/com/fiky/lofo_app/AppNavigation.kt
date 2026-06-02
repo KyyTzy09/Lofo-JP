@@ -97,7 +97,7 @@ fun AppNavigation(
             RegisterScreen(
                 viewModel = viewModel,
                 snackbarHostState = snackbarHostState,
-                onRegisterSuccess = { navController.popBackStack() },
+                onRegisterSuccess = { navController.navigate("login") },
                 onNavigateToLogin = { navController.navigate("login") }
             )
         }
@@ -191,7 +191,7 @@ fun AppNavigation(
                 onBack = { navController.popBackStack() },
                 snackbarHostState=snackbarHostState,
                 onSuccessfulCreate = {
-                    navController.navigate("item_detail/$it") {
+                    navController.navigate("announcement_detail/$it") {
                         popUpTo("home") { inclusive = true }
                     }
                 }

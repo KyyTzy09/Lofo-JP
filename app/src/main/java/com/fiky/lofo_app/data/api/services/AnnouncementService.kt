@@ -9,6 +9,7 @@ import com.fiky.lofo_app.data.api.dto.announcement.CreateAnnouncementWithVoiceRe
 import com.fiky.lofo_app.data.api.dto.announcement.PendingAnnouncements
 import com.fiky.lofo_app.data.api.dto.announcement.UpdateAnnouncementRequest
 import com.fiky.lofo_app.data.api.dto.announcement.UpdateAnnouncementResponse
+import com.fiky.lofo_app.data.api.dto.announcement.UpdateAnnouncementStatusRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -44,10 +45,17 @@ interface AnnouncementService {
     ): AnnouncementDetail
 
     @PATCH("announcements/{id}")
-    suspend fun updateAnnouncementStatus(
+    suspend fun updateAnnouncement(
         @Path("id") id: String,
         @Body announcementDto: UpdateAnnouncementRequest
     ): UpdateAnnouncementResponse
+
+    @PATCH("announcements/{id}/status")
+    suspend fun updateAnnouncementStatus(
+        @Path("id") id: String,
+        @Body announcementDto: UpdateAnnouncementStatusRequest
+    ): UpdateAnnouncementResponse
+
 
     @DELETE("announcements/{id}")
     suspend fun deleteAnnouncement(

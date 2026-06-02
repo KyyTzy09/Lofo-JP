@@ -2,21 +2,11 @@ package com.fiky.lofo_app.screens.announcement.detail
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ChatBubble
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,7 +20,9 @@ import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.fiky.lofo_app.MyApp
+import com.fiky.lofo_app.data.models.AnnouncementModel
 import com.fiky.lofo_app.data.models.AnnouncementStatus
+import com.fiky.lofo_app.screens.announcement.update.UpdateAnnouncementModal
 import com.fiky.lofo_app.screens.home.StatusBadge
 import com.fiky.lofo_app.screens.profile.global.GlobalProfileViewModel
 
@@ -41,17 +33,19 @@ fun AnnouncementDetailScreen(
     onBack: () -> Unit,
     viewModel: AnnouncementDetailViewModel = viewModel(),
     profileViewModel: GlobalProfileViewModel
-    ) {
+) {
     val state = viewModel.state
     val userState by profileViewModel.userState.collectAsState()
     val context = MyApp.instance
     val scrollState = rememberScrollState()
+
+    // State untuk kontrol Modal Update
+    var showUpdateModal by remember { mutableStateOf(false) }
+
     val isOwner by remember(userState, state.announcement) {
         derivedStateOf {
             val currentUserId = userState.userId
             val ownerId = state.announcement?.userId
-            // Debugging: Tambahkan log untuk memastikan ID mana yang kosong
-            // println("Current: $currentUserId, Owner: $ownerId")
             currentUserId.isNotEmpty() && currentUserId == ownerId
         }
     }
@@ -61,7 +55,7 @@ fun AnnouncementDetailScreen(
     }
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background, // Sesuai @Color background dark
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("Announcement Details", style = MaterialTheme.typography.titleMedium) },
@@ -70,8 +64,16 @@ fun AnnouncementDetailScreen(
                         Icon(Icons.Default.ArrowBack, contentDescription = null)
                     }
                 },
+                actions = {
+                    // TOMBOL UPDATE: Hanya muncul jika dia adalah pemilik sah barang tersebut
+                    if (isOwner && state.announcement?.status == AnnouncementStatus.PENDING) {
+                        IconButton(onClick = { showUpdateModal = true }) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit Announcement", tint = MaterialTheme.colorScheme.primary)
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.Transparent, // Biar menyatu dengan background
+                    containerColor = Color.Transparent,
                     navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
                     titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
@@ -85,7 +87,7 @@ fun AnnouncementDetailScreen(
             ) {
                 Button(
                     onClick = {
-                        if (isOwner && state.announcement?.status === AnnouncementStatus.PENDING) {
+                        if (isOwner && state.announcement?.status == AnnouncementStatus.PENDING) {
                             viewModel.markAsCompleted(announcementId)
                         } else {
                             viewModel.contactOwner(
@@ -108,13 +110,13 @@ fun AnnouncementDetailScreen(
                         Icon(Icons.Default.CheckCircle, null)
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            if (state.announcement?.status === AnnouncementStatus.PENDING) "Tandai Selesai" else "Pengumuman Berakhir",
+                            if (state.announcement?.status == AnnouncementStatus.PENDING) "Tandai Selesai" else "Pengumuman Berakhir",
                             fontWeight = FontWeight.ExtraBold, letterSpacing = 1.sp)
                     } else {
                         Icon(Icons.Default.ChatBubble, null)
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            if (state.announcement?.status === AnnouncementStatus.PENDING) "Hubungi Pemilik" else "Pengumuman Berakhir",
+                            if (state.announcement?.status == AnnouncementStatus.PENDING) "Hubungi Pemilik" else "Pengumuman Berakhir",
                             fontWeight = FontWeight.ExtraBold, letterSpacing = 1.sp)
                     }
                 }
@@ -147,24 +149,22 @@ fun AnnouncementDetailScreen(
                     ) {
                         AsyncImage(
                             model = ImageRequest.Builder(context)
-                                .data(state.announcement.item.image)
+                                .data(data.item.image)
                                 .decoderFactory(SvgDecoder.Factory())
                                 .crossfade(true)
                                 .build(),
-                            contentDescription = "Avatar User",
-                            modifier = Modifier
-                                .fillMaxSize(),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
 
-                        // Status Badge Overlay
                         Box(modifier = Modifier.padding(16.dp)) {
                             StatusBadge(data.status)
                         }
                     }
                 }
 
-                // --- BENTO SECTION 2: TITLE & STATS ---
+                // --- BENTO SECTION 2: TITLE & COMPLETE STATS ---
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(32.dp),
@@ -195,14 +195,34 @@ fun AnnouncementDetailScreen(
                         Spacer(Modifier.height(24.dp))
 
                         InfoRow(
+                            icon = Icons.Default.AccessTimeFilled,
+                            label = "Tanggal Kehilangan:",
+                            value = data.lostAt.take(10)
+                        )
+
+                        Spacer(Modifier.height(16.dp))
+
+                        // TANGGAL 1: Reported At (created_at)
+                        InfoRow(
                             icon = Icons.Default.Schedule,
-                            label = "Reported At",
-                            value = data.createdAt.take(10) // Format tanggal simple
+                            label = "Diumumkan Pada:",
+                            value = data.createdAt.take(10)
+                        )
+
+                        Spacer(Modifier.height(16.dp))
+
+                        // TANGGAL 2: Last Updated (updated_at)
+                        InfoRow(
+                            icon = Icons.Default.Update,
+                            label = "Terakhir Diperbarui:",
+                            value = data.updatedAt.take(10)
                         )
                         Spacer(Modifier.height(16.dp))
+
+                        // LOKASI: Last Seen Location
                         InfoRow(
                             icon = Icons.Default.LocationOn,
-                            label = "Last Seen Location",
+                            label = "Lokasi Terakhir:",
                             value = data.location
                         )
                     }
@@ -239,7 +259,6 @@ fun AnnouncementDetailScreen(
                             modifier = Modifier.padding(20.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Avatar Placeholder/Image
                             Box(
                                 modifier = Modifier
                                     .size(52.dp)
@@ -249,14 +268,13 @@ fun AnnouncementDetailScreen(
                             ) {
                                 AsyncImage(
                                     model = ImageRequest.Builder(context)
-                                        .data(state.announcement.user.profile?.avatar ?: "")
+                                        .data(user.profile?.avatar ?: "")
                                         .decoderFactory(SvgDecoder.Factory())
                                         .crossfade(true)
                                         .build(),
                                     contentDescription = null,
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Crop
-
                                 )
                             }
 
@@ -264,7 +282,7 @@ fun AnnouncementDetailScreen(
 
                             Column(Modifier.weight(1f)) {
                                 Text(
-                                    text = if (isOwner) "Anda" else data.user.profile?.username ?: "Anonymous User",
+                                    text = if (isOwner) "Anda" else user.profile?.username ?: "Anonymous User",
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -278,7 +296,27 @@ fun AnnouncementDetailScreen(
                     }
                 }
 
-                Spacer(Modifier.height(120.dp)) // Extra space for bottom button
+                Spacer(Modifier.height(120.dp))
+            }
+
+            // --- TRIGGER BOTTOM SHEET MODAL UPDATE ---
+            if (showUpdateModal) {
+                UpdateAnnouncementModal(
+                    announcement = data,
+                    onDismiss = { showUpdateModal = false },
+                    onUpdateSubmit = { updatedTitle, updatedLocation, updatedDate, updatedDescription ->
+                        // Tembak aksi update ke viewModel-mu bawa parameter baru
+                        viewModel.updateAnnouncement(
+                            id = announcementId,
+                            title = updatedTitle,
+                            location = updatedLocation,
+                            lostAt = updatedDate,
+                            description = updatedDescription
+                        )
+                        showUpdateModal = false
+                    },
+                    isUpdating = state.isLoading // Ambil status loading utama
+                )
             }
         }
     }
