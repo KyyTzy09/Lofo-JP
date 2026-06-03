@@ -182,7 +182,7 @@ fun AppNavigation(
                 ?: return@composable
             UpdateItemScreen(
                 itemId,
-                onBack = { navController.popBackStack() },
+                onBack = { navController.navigate("item_user") },
                 snackbarHostState = snackbarHostState
             )
         }

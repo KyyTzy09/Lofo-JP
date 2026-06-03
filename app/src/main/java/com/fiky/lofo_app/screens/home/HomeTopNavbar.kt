@@ -68,7 +68,7 @@ fun HomeTopAppBar(
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(
-                    "Hello, ${user.username}",
+                    "Halo, ${user.username}",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
                 Text(
