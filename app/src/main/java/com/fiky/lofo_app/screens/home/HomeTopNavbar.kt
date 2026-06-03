@@ -1,27 +1,24 @@
 package com.fiky.lofo_app.screens.home
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate // <-- PENTING: Untuk efek rotasi visual
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -30,13 +27,17 @@ import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.fiky.lofo_app.screens.profile.global.UserState
-
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeTopAppBar(
-    user: UserState
+    user: UserState,
+    onRefreshClick: () -> Unit
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val rotationAngle = remember { Animatable(0f) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -51,11 +52,10 @@ fun HomeTopAppBar(
                     .clip(CircleShape)
                     .border(2.dp, MaterialTheme.colorScheme.primaryContainer, CircleShape)
             ) {
-
                 AsyncImage(
                     model = ImageRequest.Builder(context)
                         .data(user.profilePicture ?: "https://via.placeholder.com/150")
-                        .decoderFactory(SvgDecoder.Factory()) // <--- INI KUNCINYA
+                        .decoderFactory(SvgDecoder.Factory())
                         .crossfade(true)
                         .build(),
                     contentDescription = "Avatar User",
@@ -68,7 +68,7 @@ fun HomeTopAppBar(
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(
-                    "Hello, ${user.username}",
+                    "Halo, ${user.username}",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
                 Text(
@@ -77,6 +77,27 @@ fun HomeTopAppBar(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+        }
+
+        IconButton(
+            onClick = {
+                onRefreshClick()
+                coroutineScope.launch {
+                    rotationAngle.snapTo(0f)
+                    rotationAngle.animateTo(
+                        targetValue = 360f,
+                        animationSpec = tween(durationMillis = 600, easing = LinearEasing)
+                    )
+                }
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = "Refresh Data",
+                tint = MaterialTheme.colorScheme.primaryContainer,
+                // KUNCI UTAMA: Terapkan derajat putaran ke modifier icon
+                modifier = Modifier.rotate(rotationAngle.value)
+            )
         }
     }
 }

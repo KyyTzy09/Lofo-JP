@@ -160,7 +160,9 @@ fun AppNavigation(
             CreateItemScreen(
                 onBack = { navController.popBackStack() },
                 onSuccess = {
-                    navController.navigate("item_detail/$it")
+                    navController.navigate("item_detail/$it") {
+                        popUpTo("home")
+                    }
                 },
                 snackbarHostState = snackbarHostState
             )
@@ -180,7 +182,7 @@ fun AppNavigation(
                 ?: return@composable
             UpdateItemScreen(
                 itemId,
-                onBack = { navController.popBackStack() },
+                onBack = { navController.navigate("item_user") },
                 snackbarHostState = snackbarHostState
             )
         }
@@ -192,7 +194,7 @@ fun AppNavigation(
                 snackbarHostState=snackbarHostState,
                 onSuccessfulCreate = {
                     navController.navigate("announcement_detail/$it") {
-                        popUpTo("home") { inclusive = true }
+                        popUpTo("home")
                     }
                 }
             )
@@ -218,7 +220,10 @@ fun AppNavigation(
                 announcementId,
                 onBack = { navController.popBackStack() },
                 viewModel = viewModel(),
-                globalProfileViewModel
+                onNavigateToItemDetail = {
+                    navController.navigate("item_detail/$it")
+                },
+                profileViewModel = globalProfileViewModel
             )
         }
     }}

@@ -33,7 +33,7 @@ fun UpdateAnnouncementModal(
     var title by remember { mutableStateOf(announcement.title) }
     var location by remember { mutableStateOf(announcement.location) }
     var description by remember { mutableStateOf(announcement.description) }
-    var dateLost by remember { mutableStateOf(announcement.createdAt) } // Default fallback
+    var dateLost by remember { mutableStateOf(announcement.lostAt) } // Default fallback
 
     var tempDate by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
