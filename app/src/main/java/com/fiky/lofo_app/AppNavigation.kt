@@ -160,7 +160,9 @@ fun AppNavigation(
             CreateItemScreen(
                 onBack = { navController.popBackStack() },
                 onSuccess = {
-                    navController.navigate("item_detail/$it")
+                    navController.navigate("item_detail/$it") {
+                        popUpTo("home")
+                    }
                 },
                 snackbarHostState = snackbarHostState
             )
@@ -192,7 +194,7 @@ fun AppNavigation(
                 snackbarHostState=snackbarHostState,
                 onSuccessfulCreate = {
                     navController.navigate("announcement_detail/$it") {
-                        popUpTo("home") { inclusive = true }
+                        popUpTo("home")
                     }
                 }
             )

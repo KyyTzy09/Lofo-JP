@@ -41,6 +41,7 @@ fun AnnouncementDetailScreen(
 
     // State untuk kontrol Modal Update
     var showUpdateModal by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     val isOwner by remember(userState, state.announcement) {
         derivedStateOf {
@@ -298,6 +299,26 @@ fun AnnouncementDetailScreen(
 
                 Spacer(Modifier.height(120.dp))
             }
+
+            if (isOwner) {
+                OutlinedButton(
+                    onClick = { showDeleteDialog = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
+                ) {
+                    Icon(Icons.Default.Delete, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Hapus Pengumuman Ini", fontWeight = FontWeight.SemiBold)
+                }
+            }
+
+            Spacer(Modifier.height(120.dp))
 
             // --- TRIGGER BOTTOM SHEET MODAL UPDATE ---
             if (showUpdateModal) {
