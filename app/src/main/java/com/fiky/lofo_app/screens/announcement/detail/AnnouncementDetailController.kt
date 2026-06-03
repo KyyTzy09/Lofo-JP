@@ -105,9 +105,7 @@ class AnnouncementDetailViewModel : ViewModel() {
         viewModelScope.launch {
             state = state.copy(isLoading = true, error = null)
             try {
-                // Asumsi di AnnouncementRepository kamu sudah ada fungsi DeleteAnnouncement(id)
                 announcementRepo.DeleteAnnouncement(id)
-
                 onDeleteSuccess()
             } catch (e: Exception) {
                 state = state.copy(error = e.localizedMessage ?: "Gagal menghapus pengumuman")

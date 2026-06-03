@@ -1,10 +1,13 @@
 package com.fiky.lofo_app.screens.home
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Inbox
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -22,7 +25,9 @@ import com.fiky.lofo_app.data.models.AnnouncementStatus
 import com.fiky.lofo_app.screens.announcement.AnnouncementCard
 import com.fiky.lofo_app.screens.profile.global.GlobalProfileViewModel
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.text.style.TextAlign
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onNavigateAnnouncementDetail : (id: String) -> Unit,
@@ -35,11 +40,18 @@ fun HomeScreen(
 
     LaunchedEffect(Unit) {
         profileViewModel.loadUserProfile()
+        // Pemicu awal saat masuk aplikasi biar datanya fresh
+        viewModel.fetchAnnouncements()
     }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        topBar = { HomeTopAppBar(userState) }
+        topBar = {
+            HomeTopAppBar(
+                userState,
+                onRefreshClick = { viewModel.fetchAnnouncements() }
+                )
+        }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -47,41 +59,57 @@ fun HomeScreen(
                 .padding(paddingValues),
             contentPadding = PaddingValues(bottom = 100.dp)
         ) {
-            // 1. Search Bar
+            // 1. Search Bar & Tombol Refresh Jaringan
             item {
-                SearchBar(
-                    query = state.searchQuery,
-                    onQueryChange = { viewModel.onSearchQueryChange(it) }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        SearchBar(
+                            query = state.searchQuery,
+                            onQueryChange = { viewModel.onSearchQueryChange(it) }
+                        )
+                    }
+                }
+            }
+
+            // 2. Hero Section
+            item {
+                HeroSection(
+                    pendingCount = state.pendingAnnouncements.size,
+                    onNavigateToAnnouncementCreate
                 )
             }
 
-            // 2. Hero Section (RecoverEase Banner)
-            item { HeroSection(
-                pendingCount = state.pendingAnnouncements.size,
-                onNavigateToAnnouncementCreate
-            ) }
-
-            // 3. Pending Announcements
+            // 3. Pending Announcements Section
             item {
                 SectionHeader("Pengumuman Berlangsung", false)
             }
 
             if (state.pendingAnnouncements.isEmpty()) {
-                item { EmptyStateMessage("Tidak ada pengumuman yang sedang berlangsung") }
+                item {
+                    EmptyStateCard(msg = "Tidak ada laporan kehilangan yang aktif saat ini. Semua barang terpantau aman!")
+                }
             } else {
                 items(state.pendingAnnouncements) { announcement ->
                     AnnouncementCard(announcement, onNavigateAnnouncementDetail)
                 }
             }
 
-            // 4. Closed Announcements
+            // 4. Closed Announcements Section
             item {
                 Spacer(modifier = Modifier.height(24.dp))
                 SectionHeader("Pengumuman Selesai", false)
             }
 
             if (state.closedAnnouncements.isEmpty()) {
-                item { EmptyStateMessage("Tidak ada pengumuman yang telah selesai") }
+                // PAKAI CARD PLACEHOLDER JUGA
+                item {
+                    EmptyStateCard(msg = "Belum ada riwayat pengumuman laporan yang diselesaikan akhir-akhir ini.")
+                }
             } else {
                 items(state.closedAnnouncements) { announcement ->
                     AnnouncementCard(announcement, onNavigateAnnouncementDetail)
@@ -167,6 +195,49 @@ fun IconText(icon: androidx.compose.ui.graphics.vector.ImageVector, text: String
         Icon(icon, null, modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.primary)
         Spacer(modifier = Modifier.width(4.dp))
         Text(text, style = MaterialTheme.typography.bodySmall, color = Color.White)
+    }
+}
+
+@Composable
+fun EmptyStateCard(msg: String) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(28.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                modifier = Modifier.size(56.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Inbox   ,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(14.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = msg,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                lineHeight = 20.sp
+            )
+        }
     }
 }
 

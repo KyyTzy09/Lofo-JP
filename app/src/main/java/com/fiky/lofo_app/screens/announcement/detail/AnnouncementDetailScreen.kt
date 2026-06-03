@@ -249,73 +249,79 @@ fun AnnouncementDetailScreen(
 
                 // --- OWNER PROFILE CARD ---
                 data.user?.let { user ->
-                    Card(
+                    // Kita bungkus Card Profil dan Tombol Hapus ke dalam satu kesatuan Column lokal
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                        )
+                        verticalArrangement = Arrangement.spacedBy(16.dp) // Ngasih jarak otomatis 16.dp antara Card dan Tombol
                     ) {
-                        Row(
-                            modifier = Modifier.padding(20.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                        // 1. Tampilan Card Profil Owner
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                            )
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(52.dp)
-                                    .clip(RoundedCornerShape(14.dp))
-                                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)),
-                                contentAlignment = Alignment.Center
+                            Row(
+                                modifier = Modifier.padding(20.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                AsyncImage(
-                                    model = ImageRequest.Builder(context)
-                                        .data(user.profile?.avatar ?: "")
-                                        .decoderFactory(SvgDecoder.Factory())
-                                        .crossfade(true)
-                                        .build(),
-                                    contentDescription = null,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop
-                                )
+                                Box(
+                                    modifier = Modifier
+                                        .size(52.dp)
+                                        .clip(RoundedCornerShape(14.dp))
+                                        .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    AsyncImage(
+                                        model = ImageRequest.Builder(context)
+                                            .data(user.profile?.avatar ?: "")
+                                            .decoderFactory(SvgDecoder.Factory())
+                                            .crossfade(true)
+                                            .build(),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
+
+                                Spacer(Modifier.width(16.dp))
+
+                                Column(Modifier.weight(1f)) {
+                                    Text(
+                                        text = if (isOwner) "Anda" else user.profile?.username ?: "Anonymous User",
+                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                    Text(
+                                        "Pemilik Barang",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
+                        }
 
-                            Spacer(Modifier.width(16.dp))
-
-                            Column(Modifier.weight(1f)) {
-                                Text(
-                                    text = if (isOwner) "Anda" else user.profile?.username ?: "Anonymous User",
-                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                                Text(
-                                    "Pemilik Barang",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                        // 2. JURUS KUNCI: Tombol Hapus ditaruh TEPAT di bawah Card Profil (Masih di dalam satu kontainer)
+                        if (isOwner) {
+                            OutlinedButton(
+                                onClick = { showDeleteDialog = true },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
+                                ),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
+                            ) {
+                                Icon(Icons.Default.Delete, contentDescription = null)
+                                Spacer(Modifier.width(8.dp))
+                                Text("Hapus Pengumuman Ini", fontWeight = FontWeight.SemiBold)
                             }
                         }
                     }
                 }
 
                 Spacer(Modifier.height(120.dp))
-            }
-
-            if (isOwner) {
-                OutlinedButton(
-                    onClick = { showDeleteDialog = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
-                    ),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
-                ) {
-                    Icon(Icons.Default.Delete, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text("Hapus Pengumuman Ini", fontWeight = FontWeight.SemiBold)
-                }
             }
 
             Spacer(Modifier.height(120.dp))
@@ -364,7 +370,7 @@ fun AnnouncementDetailScreen(
                                     id = announcementId,
                                     onDeleteSuccess = {
                                         showDeleteDialog = false
-                                        onBack() // Otomatis balik ke halaman sebelumnya setelah sukses
+                                        onBack()
                                     }
                                 )
                             },
