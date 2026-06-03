@@ -220,7 +220,10 @@ fun AppNavigation(
                 announcementId,
                 onBack = { navController.popBackStack() },
                 viewModel = viewModel(),
-                globalProfileViewModel
+                onNavigateToItemDetail = {
+                    navController.navigate("item_detail/$it")
+                },
+                profileViewModel = globalProfileViewModel
             )
         }
     }}

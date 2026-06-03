@@ -46,7 +46,7 @@ fun UserAnnouncementCard(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth().aspectRatio(0.7f),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -94,7 +94,7 @@ fun UserAnnouncementCard(
                     announcement.title,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     maxLines = 1,
-                    color = MaterialTheme.colorScheme.primary
+                    color = Color.White
                 )
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {

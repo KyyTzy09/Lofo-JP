@@ -64,15 +64,13 @@ fun HomeScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
+                        .padding(vertical = 24.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(modifier = Modifier.weight(1f)) {
-                        SearchBar(
-                            query = state.searchQuery,
-                            onQueryChange = { viewModel.onSearchQueryChange(it) }
-                        )
-                    }
+                    SearchBar(
+                        query = state.searchQuery,
+                        onQueryChange = { viewModel.onSearchQueryChange(it) }
+                    )
                 }
             }
 
