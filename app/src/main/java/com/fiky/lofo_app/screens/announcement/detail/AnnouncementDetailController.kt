@@ -108,7 +108,6 @@ class AnnouncementDetailViewModel : ViewModel() {
                 // Asumsi di AnnouncementRepository kamu sudah ada fungsi DeleteAnnouncement(id)
                 announcementRepo.DeleteAnnouncement(id)
 
-                // Jika berhasil, jalankan lambda callback untuk navigasi back
                 onDeleteSuccess()
             } catch (e: Exception) {
                 state = state.copy(error = e.localizedMessage ?: "Gagal menghapus pengumuman")

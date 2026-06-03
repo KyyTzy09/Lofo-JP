@@ -339,6 +339,51 @@ fun AnnouncementDetailScreen(
                     isUpdating = state.isLoading // Ambil status loading utama
                 )
             }
+
+            if (showDeleteDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDeleteDialog = false },
+                    icon = { Icon(Icons.Default.DeleteForever, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
+                    title = {
+                        Text(
+                            text = "Hapus Pengumuman?",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = "Apakah Anda yakin ingin menghapus pengumuman ini? Tindakan ini akan menghapus laporan dari sistem LoFo secara permanen.",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                viewModel.deleteAnnouncement(
+                                    id = announcementId,
+                                    onDeleteSuccess = {
+                                        showDeleteDialog = false
+                                        onBack() // Otomatis balik ke halaman sebelumnya setelah sukses
+                                    }
+                                )
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                        ) {
+                            Text("Hapus", color = MaterialTheme.colorScheme.onError)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { showDeleteDialog = false }
+                        ) {
+                            Text("Batal")
+                        }
+                    },
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    shape = RoundedCornerShape(28.dp)
+                )
+            }
         }
     }
 }
