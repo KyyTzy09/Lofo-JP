@@ -52,8 +52,9 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging-ktx:24.0.0")
 //  Theme
     implementation("androidx.core:core-splashscreen:1.0.1")
-
-//    DataStore
+//  QR
+    implementation("com.google.zxing:core:3.5.3")
+//  DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     implementation("io.coil-kt:coil-compose:2.5.0")

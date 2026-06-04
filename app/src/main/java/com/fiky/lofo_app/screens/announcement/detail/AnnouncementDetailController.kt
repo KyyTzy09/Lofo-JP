@@ -85,18 +85,31 @@ class AnnouncementDetailViewModel : ViewModel() {
 
         fun contactOwner(context: Context, phoneNumber: String) {
             try {
-                // Format nomor harus diawali dengan kode negara (misal: 62 untuk Indonesia)
-                // Hilangkan karakter non-digit seperti '+' atau '-'
-                val cleanNumber = phoneNumber.replace(Regex("[^0-9]"), "")
-                val url =
-                    "https://wa.me/$cleanNumber?text=${Uri.encode("Halo, saya ingin bertanya mengenai barang anda yang hilang.")}"
+                // 1. Bersihkan semua karakter non-angka
+                var cleanNumber = phoneNumber.replace(Regex("[^0-9]"), "")
 
+                // 2. FIX BUG LOGIKA: Jika nomor diawali angka '0', ubah paksa jadi '62'
+                if (cleanNumber.startsWith("0")) {
+                    cleanNumber = "62" + cleanNumber.substring(1)
+                }
+
+                // 3. Susun URL Deep Link resmi WhatsApp
+                val url = "https://wa.me/$cleanNumber?text=${Uri.encode("Halo, saya ingin bertanya mengenai barang anda yang hilang.")}"
                 val intent = Intent(Intent.ACTION_VIEW).apply {
                     data = Uri.parse(url)
+                    // Tambahkan flag ini karena kamu memulai Activity dari luar konteks Activity murni (Context aplikasi)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
-                context.startActivity(intent)
+
+                // 4. FIX CRASH: Cek dulu apakah ada aplikasi (Browser/WA) yang bisa menerima intent ini
+                if (intent.resolveActivity(context.packageManager) != null) {
+                    context.startActivity(intent)
+                } else {
+                    // Fallback jika device bener-bener gak punya browser atau WA (sangat jarang terjadi)
+                    android.widget.Toast.makeText(context, "Tidak ada aplikasi yang mendukung untuk membuka tautan", android.widget.Toast.LENGTH_SHORT).show()
+                }
+
             } catch (e: Exception) {
-                // Handle error jika terjadi kesalahan saat memulai intent
                 e.printStackTrace()
             }
         }
