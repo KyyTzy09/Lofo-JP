@@ -3,7 +3,7 @@ package com.fiky.lofo_app.screens.item.detail
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,6 +43,7 @@ import coil.compose.AsyncImage
 import com.fiky.lofo_app.MyApp
 import com.fiky.lofo_app.composables.OpenStreetMap
 import com.fiky.lofo_app.utils.ImageDownloader
+import com.fiky.lofo_app.utils.QRHelper
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -289,12 +290,30 @@ fun ItemDetailScreen(
                                             .border(4.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp)),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        AsyncImage(
-                                            model = item.qrUrl,
-                                            contentDescription = "QR Code",
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentScale = ContentScale.Fit
-                                        )
+                                        // =========================================================================
+                                        // JURUS KUNCI: CEK APAKAH QR_URL SEBUAH LINK WEB ATAU STRING ID MENTAH
+                                        // =========================================================================
+                                        val qrContent = item.qrUrl ?: item.itemId
+                                        val isNetworkUrl = qrContent.startsWith("http://") || qrContent.startsWith("https://")
+
+                                        if (isNetworkUrl) {
+                                            // KONDISI A: Worker backend sudah kelar upload gambar ke Cloudinary
+                                            AsyncImage(
+                                                model = qrContent,
+                                                contentDescription = "QR Code Cloudinary",
+                                                modifier = Modifier.fillMaxSize(),
+                                                contentScale = ContentScale.Fit
+                                            )
+                                        } else {
+                                            val localQrBitmap = remember(qrContent) { QRHelper.generateLocalQRCode(qrContent) }
+
+                                            androidx.compose.foundation.Image(
+                                                bitmap = localQrBitmap.asImageBitmap(), // <-- JURUS KUNCI: Panggil langsung sebagai extension function objeknya
+                                                contentDescription = "QR Code Lokal",
+                                                modifier = Modifier.fillMaxSize(),
+                                                contentScale = ContentScale.Fit
+                                            )
+                                        }
                                     }
                                 }
                                 Spacer(modifier = Modifier.height(16.dp))
@@ -305,9 +324,17 @@ fun ItemDetailScreen(
                                     textAlign = TextAlign.Center
                                 )
                                 Spacer(modifier = Modifier.height(24.dp))
+
+                                // Tombol download disesuaikan agar tidak crash jika filenya masih berupa teks id
                                 Button(
                                     onClick = {
-                                        downloader.downloadFile(item.qrUrl?: "", "${item.itemName}_qr.png")
+                                        val qrContent = item.qrUrl ?: item.itemId
+                                        if (qrContent.startsWith("http")) {
+                                            downloader.downloadFile(qrContent, "${item.itemName}_qr.png")
+                                        } else {
+                                            // Kasih feedback kalau data gambar cloud-nya lagi dimatangkan di server
+                                            android.widget.Toast.makeText(context, "Gambar sedang disinkronkan, silakan coba sesaat lagi!", android.widget.Toast.LENGTH_SHORT).show()
+                                        }
                                     },
                                     modifier = Modifier
                                         .fillMaxWidth()

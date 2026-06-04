@@ -348,7 +348,6 @@ fun AnnouncementDetailScreen(
                     }
                 }
 
-                // --- OWNER PROFILE CARD & DELETE BUTTON SECTION ---
                 data.user?.let { user ->
                     Column(
                         modifier = Modifier.fillMaxWidth(),
